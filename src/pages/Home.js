@@ -6,22 +6,29 @@ import styled from 'styled-components'
 import {
     Col,
     Input,
-    Button
+    Button,
+    Icon,
+    Spin
 } from 'antd'
 
 import Container from '../components/layouts/Container'
 import Row from '../components/layouts/Row'
+import swalCustomize from '@sweetalert/with-react'
+
+const HomeContainer = styled(Container)`
+    padding: 2rem 1rem;
+`
 
 const HomeRow = styled(Row)`
-    width: 480px;
-    padding: 2rem;
+    width: 960px;
+    padding: 1rem;
 `
 
 const Block = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: ${props => props.padding === false ? 0 : '0.75rem'};
+    padding: ${props => props.padding === false ? 0 : '0.75rem 0'};
 `
 
 const Title = styled.p`
@@ -42,19 +49,61 @@ const Error = styled.div`
     color: red;
 `
 
-const Label = styled.p`
-    text-align: right;
-    margin: 0;
-    padding-right: 1rem;
-    white-space: nowrap;
-`
-
 const Center = styled(Col)`
     text-align: center;
 `
 
-const StyledButton = styled(Button)`
-    width: 130px;
+const HorizontalLine = styled.div`
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    margin: 1rem 0;
+`
+
+const AgentCard = styled.div`
+    position: relative;
+    background-color: rgb(255, 255, 255);
+    box-shadow: rgba(0, 0, 0, 0.2) 1px 1px 5px;
+    text-overflow: ellipsis;
+    padding: 25px 15px;
+    border-radius: 10px;
+    transition: all 0.3s ease 0s;
+    overflow: hidden;
+    -webkit-user-select: none; /* Safari 3.1+ */
+    -moz-user-select: none; /* Firefox 2+ */
+    -ms-user-select: none; /* IE 10+ */
+    user-select: none; /* Standard syntax */
+    ${props => props.active === true && "opacity: 0.3;"}
+
+    p.position-detail {
+        margin-bottom: 0.5rem;
+        font-size: 1.25rem;
+        color: rgb(75, 75, 75);
+    }
+
+    p.fullname-detail {
+        margin-bottom: 0;
+        font-size: 1rem;
+        color: rgb(150, 150, 150);
+    }
+
+    div.arrow-icon {
+        position: absolute;
+        right: 20px;
+        top: 45px;
+        margin: 0;
+    }
+`
+
+const CustomizedSpin = styled(Spin)`
+    margin-bottom: 15px;
+
+    .ant-spin-dot {
+        font-size: 65px;
+
+        .ant-spin-dot-item {
+            width: 30px;
+            height: 30px;
+        }
+    }
 `
 
 function mapStateToProps(state) {
@@ -66,6 +115,8 @@ function Home(props) {
     const [password, setPassword] = useState(setInitialState('password'))
     const [loginButtonState, setLoginButtonState] = useState(setInitialState('loginButtonState'))
 
+    const [allAgents, setAllAgents] = useState(setInitialState('allAgents'))
+
     const [isLoggedIn, setLoggedIn] = useState(setInitialState('isLoggedIn'))
     const [errorType, setErrorType] = useState(setInitialState('errorType'))
     const [urlToken, setUrlToken] = useState('')
@@ -75,6 +126,8 @@ function Home(props) {
             type: 'SET_APP_CLASS',
             data: 'login'
         })
+
+        getAllAgents()
 
         setInitialState()
     }, [])
@@ -101,6 +154,9 @@ function Home(props) {
             case 'loginButtonState':
                 return 'disable'
 
+            case 'allAgents':
+                return []
+
             case 'username':
                 return props.username
 
@@ -118,100 +174,121 @@ function Home(props) {
         }
     }
 
-    function usernameTrigger(event) {
-        const value = event.target.value
-
-        setUsername(value)
-    }
-
-    function passwordTrigger(event) {
-        const value = event.target.value
-
-        setPassword(value)
-    }
-
-    function handleKeyPress(event) {
-        if(username !== '' && password !== '') {
-            if (event.key === 'Enter') {
-                if(loginButtonState === 'enable') {
-                    authorizedVerification()
-                }
-            }
-        }
-    }
-
-    function authorizedVerification() {
-        setErrorType(setInitialState('errorType')) // Remove any error notification
-        setLoginButtonState('loading') // disable + loading
-        axios.post(`${props.url}/authenticate`, {
-            username: username,
-            password: password
-        })
+    function getAllAgents() {
+        axios.get(`${props.url}/getallagents`)
         .then(res => {
+            // console.log('Token has been verified')
+            // console.log(res.data)
             const response = res.data
-
-            switch (response.code) {
-                case '00200':
-                    // console.log('Authenticated')
-                    // console.log(response)
-                    // check token is expired
-                    axios.get(`${props.url}/token/verify/${username}/${password}`, {
-                        headers: {
-                            'authorization': response.token
-                        }
-                    })
-                    .then(res => {
-                        // console.log('Token has been verified')
-                        // console.log(res.data)
-                        if(res.data.code === '00200') {
-                            setUrlToken(response.token)
-                            setLoggedIn(true)
-                        }
-                        else {
-                            // save token //
-                            axios.post(`${props.url}/token/save`, {
-                                username: username,
-                                password: password,
-                                openedCounter: response.openingCouter
-                            })
-                            .then(res => {
-                                setUrlToken(res.data.token) // set new token
-                                setLoggedIn(true)
-                            })
-                            .catch((err) => {
-                                console.log(err)
-                            })
-                        }
-                    })
-                    .catch((err) => {
-                        console.log(err)
-                    })
-                    break
-
-                case '00201':
-                    setErrorType(4) // Role is 0
-                    setLoginButtonState('enable') // enable
-                    break
-
-                case '00401':
-                    setErrorType(3) // Access denied to DB or out of service
-                    setLoginButtonState('enable') // enable
-                    break
-
-                case '00404':
-                    setErrorType(1) // Username or password was incorrect
-                    setLoginButtonState('disable') // disable
-                    break
             
-                default:
-                    break
+            if(response.code === "00200") {
+                setAllAgents(response.data)
             }
         })
         .catch((err) => {
             console.log(err)
-            setErrorType(2) // Can't connect to gateway
-            setLoginButtonState('enable') // enable
         })
+    }
+
+    function authorizedVerification(getUsername) {
+        swalCustomize({
+            buttons: false,
+            closeOnClickOutside: false,
+            closeOnEsc: false,
+            content: (
+                <div style={{
+                    color: 'rgba(0, 0, 0, 0.65)',
+                    padding: '0.5rem 1rem',
+                    border: 0,
+                }}>
+                    <div style={{
+                        fontSize: '1.25rem',
+                        fontWeight: 500,
+                        marginTop: '1rem',
+                        marginBottom: '1rem',
+                    }}>
+                        กำลังเข้าสู่ระบบ
+                    </div>
+                    <CustomizedSpin size="large" />
+                </div>
+            )
+        })
+        setErrorType(setInitialState('errorType')) // Remove any error notification
+        setLoginButtonState('loading') // disable + loading
+
+        setTimeout(() => {
+            axios.post(`${props.url}/authenticate`, {
+                username: getUsername,
+            })
+            .then(res => {
+                const response = res.data
+    
+                switch (response.code) {
+                    case '00200':
+                        // console.log('Authenticated')
+                        // console.log(response)
+                        // check token is expired
+                        axios.get(`${props.url}/token/verify/${getUsername}`, {
+                            headers: {
+                                'authorization': response.token
+                            }
+                        })
+                        .then(res => {
+                            // console.log('Token has been verified')
+                            // console.log(res.data)
+                            if(res.data.code === '00200') {
+                                setUrlToken(response.token)
+                                // setLoggedIn(true)
+                                getAllAgents()
+                                swalCustomize.close()
+                            }
+                            else {
+                                // save token //
+                                axios.post(`${props.url}/token/save`, {
+                                    username: getUsername,
+                                })
+                                .then(res => {
+                                    // console.log(res.data)
+                                    setUrlToken(res.data.token) // set new token
+                                    // setLoggedIn(true)
+                                    getAllAgents()
+                                    swalCustomize.close()
+                                })
+                                .catch((err) => {
+                                    console.log(err)
+                                })
+                            }
+                        })
+                        .catch((err) => {
+                            console.log(err)
+                        })
+                        break
+    
+                    case '00201':
+                        setErrorType(4) // Role is 0
+                        setLoginButtonState('enable') // enable
+                        break
+    
+                    case '00401':
+                        setErrorType(3) // Access denied to DB or out of service
+                        setLoginButtonState('enable') // enable
+                        break
+    
+                    case '00404':
+                        setErrorType(1) // Username or password was incorrect
+                        setLoginButtonState('disable') // disable
+                        break
+                
+                    default:
+                        break
+                }
+            })
+            .catch((err) => {
+                console.log(err)
+                setErrorType(2) // Can't connect to gateway
+                setLoginButtonState('enable') // enable
+            })
+        }, 500)
     }
 
     function displayError() {
@@ -242,31 +319,49 @@ function Home(props) {
         ?
         <Redirect to={`/${username}`} />
         :
-        <Container className="animated fadeIn">
+        <HomeContainer className="animated fadeIn">
             <HomeRow>
                 <Block>
                     <Center xs={24}>
-                        <Title>กรุณาเข้าสู่ระบบ</Title>
-                        <Description>เพื่อดูข้อมูลประวัติกำลังพลใน กพ.ทบ.</Description>
+                        <Title>กรุณาเลือกตำแหน่งของท่าน</Title>
+                        <Description>เพื่อเข้าสู่การกรอกให้คะแนนผู้เสนอขอบ้านพัก</Description>
                     </Center>
                 </Block>
-                <Block>
-                    <Col xs={8}>
-                        <Label>ชื่อผู้ใช้:</Label>
-                    </Col>
-                    <Col xs={16}>
-                        <Input
-                            type="text"
-                            placeholder="Username"
-                            name="username"
-                            size="large"
-                            value={username}
-                            onChange={usernameTrigger}
-                            onKeyPress={handleKeyPress}
-                        />
-                    </Col>
-                </Block>
-                <Block>
+                <HorizontalLine />
+                {allAgents.length > 0 && allAgents.map((item, index) => {
+                    return (
+                        <Block key={index}>
+                            <Center xs={24}>
+                                {item.inActive ?
+                                <AgentCard active={item.inActive}>
+                                    <p className="position-detail">{item.position}</p>
+                                    <p className="fullname-detail">{item.fullname}</p>
+                                    <div className="arrow-icon">
+                                        <Icon
+                                            type="caret-right"
+                                            style={{
+                                                fontSize: "1.5rem"
+                                            }}
+                                        />
+                                    </div>
+                                </AgentCard> :
+                                <AgentCard active={item.inActive} onClick={() => authorizedVerification(item.username)}>
+                                    <p className="position-detail">{item.position}</p>
+                                    <p className="fullname-detail">{item.fullname}</p>
+                                    <div className="arrow-icon">
+                                        <Icon
+                                            type="caret-right"
+                                            style={{
+                                                fontSize: "1.5rem"
+                                            }}
+                                        />
+                                    </div>
+                                </AgentCard>}
+                            </Center>
+                        </Block>
+                    )
+                })}
+                {/* <Block>
                     <Col xs={8}>
                         <Label>รหัสผ่าน:</Label>
                     </Col>
@@ -299,9 +394,9 @@ function Home(props) {
                     <Center xs={24}>
                         { displayError() }
                     </Center>
-                </Block>
+                </Block> */}
             </HomeRow>
-        </Container>
+        </HomeContainer>
     )
 }
 

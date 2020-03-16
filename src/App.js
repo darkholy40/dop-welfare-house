@@ -15,11 +15,6 @@ const AppContainer = styled.div`
   position: relative;
   background-color: rgba(0, 0, 0, 0.1);
 
-  &.login {
-    justify-content: center;
-    background-color: rgba(0, 0, 0, 0.5);
-  }
-
   &.notfound {
     justify-content: center;
     background-color: rgba(0, 0, 0, 0.7);
@@ -37,7 +32,8 @@ function mapStateToProps(state) {
 function App(props) {
   return (
     <AppContainer className={props.appContainerClass}>
-      {props.appContainerClass === 'found_data' && <Header />}
+      {/* {props.appContainerClass === 'found_data' && <Header />} */}
+      <Header />
       <Routes />
     </AppContainer>
   )
