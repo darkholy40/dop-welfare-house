@@ -40,7 +40,8 @@ const reducer = (state = initState, action) => {
         case 'SET_TOKEN':
             return {
                 ...state,
-                token: action.data
+                token: action.data.token,
+                username: action.data.username
             }
 
         case 'TOKEN_EXPIRED':

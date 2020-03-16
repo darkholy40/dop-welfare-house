@@ -144,7 +144,10 @@ function Home(props) {
         if(isLoggedIn === true) {
             props.dispatch({
                 type: 'SET_TOKEN',
-                data: urlToken
+                data: {
+                    token: urlToken,
+                    username: username
+                }
             })
         }
     }, [isLoggedIn])
@@ -215,6 +218,7 @@ function Home(props) {
         })
         setErrorType(setInitialState('errorType')) // Remove any error notification
         setLoginButtonState('loading') // disable + loading
+        setUsername(getUsername)
 
         setTimeout(() => {
             axios.post(`${props.url}/authenticate`, {
@@ -238,9 +242,8 @@ function Home(props) {
                             // console.log(res.data)
                             if(res.data.code === '00200') {
                                 setUrlToken(response.token)
-                                // setLoggedIn(true)
-                                getAllAgents()
-                                swalCustomize.close()
+
+                                goNextPage()
                             }
                             else {
                                 // save token //
@@ -250,9 +253,8 @@ function Home(props) {
                                 .then(res => {
                                     // console.log(res.data)
                                     setUrlToken(res.data.token) // set new token
-                                    // setLoggedIn(true)
-                                    getAllAgents()
-                                    swalCustomize.close()
+                                    
+                                    goNextPage()
                                 })
                                 .catch((err) => {
                                     console.log(err)
@@ -288,6 +290,15 @@ function Home(props) {
                 setErrorType(2) // Can't connect to gateway
                 setLoginButtonState('enable') // enable
             })
+        }, 500)
+    }
+
+    function goNextPage() {
+        getAllAgents()
+
+        setTimeout(() => {
+            swalCustomize.close()
+            setLoggedIn(true)
         }, 500)
     }
 

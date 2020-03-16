@@ -117,10 +117,8 @@ function Header(props) {
     function logout() {
         setIsLoading(true)
         const username = props.userData.username
-        const password = props.userData.password
         axios.post(`${props.url}/logout`, {
             username: username,
-            password: password
         })
         .then(res => {
             const response = res.data

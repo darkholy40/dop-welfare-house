@@ -32,8 +32,7 @@ function mapStateToProps(state) {
 function App(props) {
   return (
     <AppContainer className={props.appContainerClass}>
-      {/* {props.appContainerClass === 'found_data' && <Header />} */}
-      <Header />
+      {props.appContainerClass === 'found_data' && <Header />}
       <Routes />
     </AppContainer>
   )
