@@ -13,6 +13,7 @@ import {
 
 import Container from '../components/layouts/Container'
 import Row from '../components/layouts/Row'
+import useInterval from '../functions/useInterval'
 import swalCustomize from '@sweetalert/with-react'
 
 const HomeContainer = styled(Container)`
@@ -151,6 +152,10 @@ function Home(props) {
             })
         }
     }, [isLoggedIn])
+
+    useInterval(() => {
+        getAllAgents()
+    }, 1000)
 
     function setInitialState(stateName) {
         switch (stateName) {
