@@ -362,7 +362,7 @@ function Home(props) {
                 {allAgents.length > 0 ? 
                     allAgents.map((item, index) => {
                     return (
-                        <Block key={index}>
+                        <Block key={index} className="animated fadeIn">
                             <Center xs={24}>
                                 {item.inActive ?
                                 <AgentCard loggedin={item.inActive}>
