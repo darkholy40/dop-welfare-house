@@ -372,7 +372,7 @@ function mapStateToProps(state) {
     return state
 }
 
-function User(props) {
+function Score(props) {
     const [containerClass, setContainerClass] = useState('hidden')
     const [getData, setGetData] = useState(setInitialState('getData'))
     const [afterGettingdata, setAfterGettingData] = useState(setInitialState('afterGettingdata'))
@@ -398,7 +398,9 @@ function User(props) {
 
     useEffect(() => {
         window.scrollTo(0, 0)
-        setContainerClass('animated fadeIn')
+        setTimeout(() => {
+            setContainerClass('animated fadeIn')
+        }, 250)
 
         props.dispatch({
             type: 'SET_APP_CLASS',
@@ -540,4 +542,4 @@ function User(props) {
     )
 }
 
-export default connect(mapStateToProps)(User)
+export default connect(mapStateToProps)(Score)
