@@ -9,7 +9,11 @@ import Row from '../layouts/Row'
 
 const LoadingRow = styled(Row)`
     max-width: 700px;
-    padding: 1.5rem 1rem;
+    padding: 1.5rem 0;
+    ${props => props.shadow === false && `
+        box-shadow: none;
+        max-width: 270px;
+    `}
 `
 
 const Center = styled(Col)`
@@ -40,7 +44,7 @@ const CustomizedSpin = styled(Spin)`
 
 function Loading(props) {
     return (
-        <LoadingRow>
+        <LoadingRow shadow={props.shadow}>
             <Center xs={24}>
                 <CustomizedSpin size="large" />
             </Center>

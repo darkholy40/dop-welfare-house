@@ -23,6 +23,10 @@ const AppContainer = styled.div`
   &.center {
     justify-content: center;
   }
+
+  &.login {
+    justify-content: flex-start;
+  }
 `
 
 function mapStateToProps(state) {

@@ -36,7 +36,7 @@ const ThisContainer = styled(Container)`
 `
 
 const ScoreRow = styled(Row)`
-    padding: 1rem 2rem 2rem;
+    padding: 1rem 2rem;
     opacity: 0;
 
     @media (max-width: 991px) {

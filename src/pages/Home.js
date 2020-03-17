@@ -13,11 +13,16 @@ import {
 
 import Container from '../components/layouts/Container'
 import Row from '../components/layouts/Row'
+import Loading from '../components/functions/Loading'
 import useInterval from '../functions/useInterval'
 import swalCustomize from '@sweetalert/with-react'
 
 const HomeContainer = styled(Container)`
     padding: 2rem 1rem;
+
+    &.hidden {
+        opacity: 0;
+    }
 `
 
 const HomeRow = styled(Row)`
@@ -72,7 +77,11 @@ const AgentCard = styled.div`
     -moz-user-select: none; /* Firefox 2+ */
     -ms-user-select: none; /* IE 10+ */
     user-select: none; /* Standard syntax */
-    ${props => props.active === true && "opacity: 0.3;"}
+    ${props => props.loggedin === true ? `
+        opacity: 0.3;
+    ` : `
+        cursor: pointer;
+    `}
 
     p.position-detail {
         margin-bottom: 0.5rem;
@@ -112,6 +121,7 @@ function mapStateToProps(state) {
 }
 
 function Home(props) {
+    const [homeContainerClass, setHomeContainerClass] = useState(setInitialState('homeContainerClass'))
     const [username, setUsername] = useState(setInitialState('username'))
     const [password, setPassword] = useState(setInitialState('password'))
     const [loginButtonState, setLoginButtonState] = useState(setInitialState('loginButtonState'))
@@ -128,9 +138,11 @@ function Home(props) {
             data: 'login'
         })
 
-        getAllAgents()
-
         setInitialState()
+
+        setTimeout(() => {
+            setHomeContainerClass('animated fadeIn')
+        }, 25)
     }, [])
 
     useEffect(() => {
@@ -155,10 +167,13 @@ function Home(props) {
 
     useInterval(() => {
         getAllAgents()
-    }, 1000)
+    }, 500)
 
     function setInitialState(stateName) {
         switch (stateName) {
+            case 'homeContainerClass':
+                return 'hidden'
+
             case 'loginButtonState':
                 return 'disable'
 
@@ -335,7 +350,7 @@ function Home(props) {
         ?
         <Redirect to={`/${username}`} />
         :
-        <HomeContainer className="animated fadeIn">
+        <HomeContainer className={homeContainerClass}>
             <HomeRow>
                 <Block>
                     <Center xs={24}>
@@ -344,12 +359,13 @@ function Home(props) {
                     </Center>
                 </Block>
                 <HorizontalLine />
-                {allAgents.length > 0 && allAgents.map((item, index) => {
+                {allAgents.length > 0 ? 
+                    allAgents.map((item, index) => {
                     return (
                         <Block key={index}>
                             <Center xs={24}>
                                 {item.inActive ?
-                                <AgentCard active={item.inActive}>
+                                <AgentCard loggedin={item.inActive}>
                                     <p className="position-detail">{item.position}</p>
                                     <p className="fullname-detail">{item.fullname}</p>
                                     <div className="arrow-icon">
@@ -361,7 +377,7 @@ function Home(props) {
                                         />
                                     </div>
                                 </AgentCard> :
-                                <AgentCard active={item.inActive} onClick={() => authorizedVerification(item.username)}>
+                                <AgentCard loggedin={item.inActive} onClick={() => authorizedVerification(item.username)}>
                                     <p className="position-detail">{item.position}</p>
                                     <p className="fullname-detail">{item.fullname}</p>
                                     <div className="arrow-icon">
@@ -375,42 +391,11 @@ function Home(props) {
                                 </AgentCard>}
                             </Center>
                         </Block>
-                    )
-                })}
-                {/* <Block>
-                    <Col xs={8}>
-                        <Label>รหัสผ่าน:</Label>
-                    </Col>
-                    <Col xs={16}>
-                        <Input.Password
-                            type="text"
-                            placeholder="Password"
-                            name="password"
-                            size="large"
-                            value={password}
-                            onChange={passwordTrigger}
-                            onKeyPress={handleKeyPress}
-                        />
-                    </Col>
-                </Block>
-                <Block>
-                    <Center xs={24}>
-                        <StyledButton
-                            type="primary"
-                            size="large"
-                            disabled={loginButtonState === 'enable' ? false : true}
-                            onClick={authorizedVerification}
-                            icon={loginButtonState === 'loading' ? 'loading' : 'login'}
-                        >
-                            Login
-                        </StyledButton>
-                    </Center>
-                </Block>
-                <Block padding={errorType > 0 ? true : false}>
-                    <Center xs={24}>
-                        { displayError() }
-                    </Center>
-                </Block> */}
+                    )}) :
+                    <Block>
+                        <Loading title="กำลังอ่านข้อมูล..." shadow={false} />
+                    </Block>
+                }
             </HomeRow>
         </HomeContainer>
     )
