@@ -27,8 +27,7 @@ const reducer = (state = initState, action) => {
         case 'SET_USER_DATA':
             return {
                 ...state,
-                userData: action.data,
-                username: action.data.username
+                userData: action.data
             }
 
         case 'GET_SETTING':

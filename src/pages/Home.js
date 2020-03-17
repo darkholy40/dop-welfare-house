@@ -83,13 +83,13 @@ const AgentCard = styled.div`
         cursor: pointer;
     `}
 
-    p.position-detail {
+    p.fullname-detail {
         margin-bottom: 0.5rem;
         font-size: 1.25rem;
         color: rgb(75, 75, 75);
     }
 
-    p.fullname-detail {
+    p.position-detail {
         margin-bottom: 0;
         font-size: 1rem;
         color: rgb(150, 150, 150);
@@ -366,8 +366,8 @@ function Home(props) {
                             <Center xs={24}>
                                 {item.inActive ?
                                 <AgentCard loggedin={item.inActive}>
-                                    <p className="position-detail">{item.position}</p>
                                     <p className="fullname-detail">{item.fullname}</p>
+                                    <p className="position-detail">{item.position}</p>
                                     <div className="arrow-icon">
                                         <Icon
                                             type="caret-right"
@@ -378,8 +378,8 @@ function Home(props) {
                                     </div>
                                 </AgentCard> :
                                 <AgentCard loggedin={item.inActive} onClick={() => authorizedVerification(item.username)}>
-                                    <p className="position-detail">{item.position}</p>
                                     <p className="fullname-detail">{item.fullname}</p>
+                                    <p className="position-detail">{item.position}</p>
                                     <div className="arrow-icon">
                                         <Icon
                                             type="caret-right"

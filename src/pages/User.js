@@ -377,10 +377,6 @@ function User(props) {
     const [getData, setGetData] = useState(setInitialState('getData'))
     const [afterGettingdata, setAfterGettingData] = useState(setInitialState('afterGettingdata'))
     const [displayElements, setDisplayElements] = useState(setInitialState('displayElements'))
-    
-    const [isLoading, setIsLoading] = useState(false)
-
-    const [dopData, setDopData] = useState([])
 
     const customizeRenderEmpty = () => (
         <div 

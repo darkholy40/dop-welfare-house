@@ -138,7 +138,7 @@ function Header(props) {
     }
 
     function renderUsername() {
-        const username = props.userData.username
+        const username = `${props.userData.rank} ${props.userData.name} ${props.userData.lastname}`
         return username
     }
 
@@ -158,7 +158,11 @@ function Header(props) {
             <Dropdown overlay={menu} trigger={['click']} placement="bottomLeft">
                 <ProfileContent>
                     <Icon type="user" />
-                    <span> {renderUsername()}</span>
+                    <span style={{
+                        marginLeft: "0.25rem"
+                    }}>
+                        {renderUsername()}
+                    </span>
                 </ProfileContent>
             </Dropdown>
             <SearchIcon
