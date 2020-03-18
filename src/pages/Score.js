@@ -57,277 +57,6 @@ const ErrorBlock = styled.div`
     }
 `
 
-const Title = styled.p`
-    text-align: center;
-    font-size: 1.75rem;
-    margin-bottom: 24px;
-
-    span {
-        padding-left: 20px;
-    }
-
-    @media (max-width: 991px) {
-        font-size: 1.25rem;
-    }
-`
-
-const Error = styled.span`
-    color: #f00;
-`
-
-const DesktopCol = styled(Col)`
-    @media (max-width: 991px) {
-        display: none;
-    }
-`
-
-const MobileCol = styled(Col)`
-    -webkit-user-select: none; /* Safari 3.1+ */
-    -moz-user-select: none; /* Firefox 2+ */
-    -ms-user-select: none; /* IE 10+ */
-    user-select: none; /* Standard syntax */
-    text-align: center;
-
-    @media (min-width: 992px) {
-        display: none;
-    }
-`
-
-const GetDataCol = styled(Col)`
-    text-align: ${props => props.setalignment === "center" ? "center" : "left"};
-    padding-left: 20px;
-    
-    @media (max-width: 991px) {
-        padding-left: 0;
-    }
-`
-
-const MyRow = styled.div`
-    width: 100%;
-    position: relative;
-    background-color: rgb(255, 255, 255);
-    color: rgb(0, 0, 0);
-    box-shadow: rgba(0, 0, 0, 0.2) 1px 1px 5px;
-    text-overflow: ellipsis;
-    padding: 30px 25px;
-    border-radius: 3px;
-    transition: 0.3s;
-`
-
-const MyCard = styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    padding-top: 5px;
-    padding-bottom: 5px;
-
-    span.label {
-        width: 100%;
-        text-align: left;
-        margin-bottom: 5px;
-    }
-`
-
-const MyTotalRow = styled(MyRow)`
-    -webkit-user-select: none; /* Safari 3.1+ */
-    -moz-user-select: none; /* Firefox 2+ */
-    -ms-user-select: none; /* IE 10+ */
-    user-select: none; /* Standard syntax */
-    padding: 10px 25px;
-    margin-bottom: 15px;
-
-    span.total {
-        font-weight: bold;
-    }
-
-    span.description {
-        color: rgb(175, 175, 175);
-    }
-
-    @media (max-width: 991px) {
-        padding: 5px 20px;
-    }
-`
-
-const PersonelCard = styled(MyRow)`
-    box-shadow: none;
-    border-radius: 0;
-    padding: 10px 20px;
-    border-bottom: 1px solid rgb(200,200,200);
-
-    &:hover {
-        background-color: rgba(24, 144, 255, 0.05);
-    }
-
-    div {
-        p {
-            margin: 0;
-            padding: 5px 0;
-        }
-    }
-
-    @media (min-width: 992px) {
-        display: none;
-    }
-`
-
-const MySelect = styled(Select)`
-    width: 100%;
-`
-
-const MyInput = styled(Input)`
-    width: 100%;
-`
-
-const DopDataTableBlock = styled.div`
-    -webkit-user-select: none; /* Safari 3.1+ */
-    -moz-user-select: none; /* Firefox 2+ */
-    -ms-user-select: none; /* IE 10+ */
-    user-select: none; /* Standard syntax */
-    padding: 15px 15px 0px;
-
-    @media (max-width: 991px) {
-        display: none;
-    }
-`
-
-const PersonDetailIcon = styled(Icon)`
-    color: rgb(150, 150, 150);
-    font-size: 1rem;
-    border: 1px solid rgba(0, 0, 0, 0.3);
-    border-radius: 100%;
-    padding: 5px;
-    transition: 0.1s;
-
-    &:hover {
-        color: #ffffff;
-        border: 1px solid #1890ff;
-        background-color: #1890ff
-    }
-`
-
-const PersonDetailModal = styled(Modal)`
-    max-width: 1024px;
-    top: 20px;
-
-    .ant-modal-body {
-        padding: 0
-    }
-
-    div.header {
-        display: flex;
-        flex-direction: row;
-        align-item: center;
-        justify-content: space-between;
-        padding: 16px 24px;
-        margin-bottom: 24px;
-        color: rgba(0, 0, 0, 0.65);
-        background: #fff;
-        border-bottom: 1px solid #e8e8e8;
-        border-radius: 4px 4px 0 0;
-
-        span.title {
-            margin: 0;
-            color: rgba(0, 0, 0, 0.85);
-            font-weight: 500;
-            font-size: 16px;
-            line-height: 22px;
-            word-wrap: break-word;
-        }
-
-        span.close-icon {
-            font-size: 1rem;
-            color: rgba(0, 0, 0, 0.5);
-            transition: 0.1s;
-
-            i {
-                &:hover {
-                    color: rgba(0, 0, 0, 0.25);
-                }
-            }
-        }
-    }
-
-    div.body {
-        padding: 0 24px;
-
-        div.top {
-            display: flex;
-            margin-bottom: 1.5rem;
-    
-            div.pic {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                overflow: hidden;
-                height: 180px;
-                width: 150px;
-                border: 1px solid rgb(200, 200, 200);
-                border-radius: 5px;
-    
-                @media (max-width: 991px) {
-                    margin-bottom: 0.25rem;
-                }
-            }
-    
-            div.name {
-                font-size: 1.5rem;
-                font-weight: 600;
-                padding-left: 1.5rem;
-    
-                span.rightCol {
-                    padding-left: 1rem;
-                }
-    
-                @media (max-width: 991px) {
-                    font-size: 1.25rem;
-                    padding-left: 0;
-                }
-            }
-    
-            @media (max-width: 991px) {
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-            }
-        }
-    }
-    
-    div.footer {
-        padding: 0 24px 24px 24px;
-        display: flex;
-        flex-direction: row;
-        align-item: center;
-        justify-content: flex-end;
-    }
-`
-
-const ProfileImage = styled.img`
-    max-width: 150px;
-`
-
-const CustomPanelStyle = styled(Collapse.Panel)`
-    background-color: #f7f7f7;
-    border: 1px solid #d9d9d9;
-    border-radius: 4px !important;
-    margin-bottom: 24px;
-    overflow: hidden;
-
-    .ant-collapse-content-box {
-        border: 0;
-        background-color: #fff;
-    }
-
-    div {
-        padding: 3px 0;
-
-        span.right {
-            padding-left: 1rem;
-        }
-    }
-`
-
 const LoadingBlock = styled.div`
     display: flex;
     flex-direction: column;
@@ -348,17 +77,6 @@ const CustomizedSpin = styled(Spin)`
             width: 30px;
             height: 30px;
         }
-    }
-`
-
-const SearchDrawer = styled(Drawer)`
-    .ant-drawer-header {
-        padding-left: 1rem;
-        padding-right: 1rem;
-    }
-
-    .ant-drawer-body {
-        padding: 0.5rem 1rem;
     }
 `
 
@@ -400,7 +118,7 @@ function Score(props) {
         window.scrollTo(0, 0)
         setTimeout(() => {
             setContainerClass('animated fadeIn')
-        }, 250)
+        }, 0)
 
         props.dispatch({
             type: 'SET_APP_CLASS',
@@ -438,10 +156,7 @@ function Score(props) {
                     type: 'SET_APP_CLASS',
                     data: 'notfound'
                 })
-                props.dispatch({
-                    type: 'TOKEN_EXPIRED'
-                })
-                return setDisplayElements(<NotFound type="wrongtoken" />)
+                return setDisplayElements(<NotFound type="wrong-url" />)
 
             case 4:
                 props.dispatch({
@@ -459,6 +174,16 @@ function Score(props) {
                     data: 'notfound'
                 })
                 return setDisplayElements(<ConnectionFailed type="db" thisCallBack={() => getUserData(500, 'again')}/>)
+
+            case 7:
+                props.dispatch({
+                    type: 'SET_APP_CLASS',
+                    data: 'notfound'
+                })
+                props.dispatch({
+                    type: 'TOKEN_EXPIRED'
+                })
+                return setDisplayElements(<NotFound type="loggedout" />)
 
             default:
                 return setDisplayElements(<Loading />)
@@ -488,13 +213,18 @@ function Score(props) {
         setTimeout(() => {
             axios.get(`${props.url}/getdata/${currentUsername}`, {
                 headers: {
-                    'authorization': props.token
+                    'authorization': props.token,
+                    'username': props.username
                 }
             })
             .then(res => {
                 const response = res.data
                 if(response.code === '00404') { // ไม่พบข้อมูล
                     setAfterGettingData(3)
+                }
+
+                if(response.code === 'loggedout') { // ออกจากระบบหรือมีการเข้าสู่ระบบจากอุปกรณ์อื่น
+                    setAfterGettingData(7)
                 }
 
                 if(response.code === '00401') { // token หมดอายุแล้ว
@@ -526,12 +256,20 @@ function Score(props) {
         }, timer || 0)
     }
 
+    function renderScoreContent() {
+        return (
+            <div>
+                <MainTitle title="บันทึกคะแนนผู้เสนอขอบ้านพัก กพ.ทบ." />
+            </div>
+        )
+    }
+
     return (
         <ConfigProvider renderEmpty={customizeRenderEmpty}>
             <ThisContainer className={containerClass} padding={afterGettingdata === 1 && "2rem 1rem"}>
                 {getData !== undefined
                     ? <ScoreRow className="animated fadeIn">
-                        ScoreRow
+                        {renderScoreContent()}
                     </ScoreRow>
                     : <ErrorBlock className="animated fadeIn">
                         {displayElements}

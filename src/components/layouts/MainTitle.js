@@ -14,18 +14,18 @@ const Container = styled.div`
 
 const Shield = styled.div`
     display: flex;
-    color: rgb(0, 0, 0);
+    color: rgb(50, 50, 50);
     padding: 0.5rem 0px;
     border-bottom: 2px solid rgba(0, 0, 0, 0.1);
     transition: 0.3s;
 `
 
 const Text = styled.span`
-    font-size: 22px;
+    font-size: 20px;
     line-height: 28px;
 
     @media (max-width: 767px) {
-        font-size: 20px;
+        font-size: 18px;
     }
 `
 
