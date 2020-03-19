@@ -66,7 +66,7 @@ const AgentCard = styled.div`
     text-overflow: ellipsis;
     padding: 25px 15px;
     border-radius: 10px;
-    transition: all 0.3s ease 0s;
+    transition: all 0.2s ease 0s;
     overflow: hidden;
     -webkit-user-select: none; /* Safari 3.1+ */
     -moz-user-select: none; /* Firefox 2+ */
@@ -76,6 +76,10 @@ const AgentCard = styled.div`
         opacity: 0.3;
     ` : `
         cursor: pointer;
+
+        &:hover {
+            background-color: rgba(24, 144, 255, 0.1); 
+        }
     `}
 
     p.position-detail {

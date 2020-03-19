@@ -6,10 +6,6 @@ const Container = styled.div`
     box-sizing: border-box;
     margin-bottom: 30px;
     width: 100%;
-
-    @media (max-width: 767px) {
-        margin-bottom: 15px;
-    }
 `
 
 const Shield = styled.div`

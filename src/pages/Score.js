@@ -44,6 +44,52 @@ const ScoreRow = styled(Row)`
     }
 `
 
+const CardShield =  styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+`
+
+const Card = styled.div`
+    position: relative;
+    width: 100%;
+    background-color: rgb(255, 255, 255);
+    box-shadow: rgba(0, 0, 0, 0.2) 1px 1px 5px;
+    padding: 50px 15px;
+    margin-bottom: 30px;
+    border-radius: 10px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.2s ease 0s;
+    -webkit-user-select: none; /* Safari 3.1+ */
+    -moz-user-select: none; /* Firefox 2+ */
+    -ms-user-select: none; /* IE 10+ */
+    user-select: none; /* Standard syntax */
+
+    &.the-last-one {
+        margin-bottom: 20px;
+    }
+
+    &:hover {
+        background-color: rgba(24, 144, 255, 0.1);
+    }
+
+    .salary-group {
+        font-size: 1.25rem;
+        margin-bottom: 0;
+        text-align: center;
+    }
+
+    div.arrow-icon {
+        position: absolute;
+        right: 8px;
+        top: 54px;
+        margin: 0;
+    }
+`
+
 const ErrorBlock = styled.div`
     opacity: 0;
     display: flex;
@@ -240,6 +286,8 @@ function Score(props) {
 
                     setAfterGettingData(1)
 
+                    getCandidatesData()
+
                     if(type === 'again') {
                         notification['success']({
                             message: 'แจ้งเตือน',
@@ -256,10 +304,50 @@ function Score(props) {
         }, timer || 0)
     }
 
+    function getCandidatesData() {
+        axios.get(`${props.url}/getcandidates`, {
+            headers: {
+                'authorization': props.token
+            }
+        })
+        .then(res => {
+            const response = res.data
+
+            console.log(response)
+        })
+        .catch((err) => {
+            console.log(err)
+        })
+    }
+
     function renderScoreContent() {
         return (
             <div>
-                <MainTitle title="บันทึกคะแนนผู้เสนอขอบ้านพัก กพ.ทบ." />
+                <MainTitle title="กรุณาเลือกกลุ่มที่ต้องการลงคะแนน" />
+                <CardShield>
+                    <Card>
+                        <p className="salary-group">กลุ่ม นายทหารสัญญาบัตร</p>
+                        <div className="arrow-icon">
+                            <Icon
+                                type="caret-right"
+                                style={{
+                                    fontSize: "1.5rem"
+                                }}
+                            />
+                        </div>
+                    </Card>
+                    <Card className="the-last-one">
+                        <p className="salary-group">กลุ่ม นายทหารประทวน</p>
+                        <div className="arrow-icon">
+                            <Icon
+                                type="caret-right"
+                                style={{
+                                    fontSize: "1.5rem"
+                                }}
+                            />
+                        </div>
+                    </Card>
+                </CardShield>
             </div>
         )
     }
