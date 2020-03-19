@@ -61,10 +61,11 @@ const HorizontalLine = styled.div`
 
 const AgentCard = styled.div`
     position: relative;
+    text-align: left;
     background-color: rgb(255, 255, 255);
     box-shadow: rgba(0, 0, 0, 0.2) 1px 1px 5px;
     text-overflow: ellipsis;
-    padding: 25px 15px;
+    padding: 25px 30px;
     border-radius: 10px;
     transition: all 0.2s ease 0s;
     overflow: hidden;

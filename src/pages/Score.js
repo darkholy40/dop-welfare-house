@@ -3,18 +3,12 @@ import { connect } from 'react-redux'
 import axios from 'axios'
 import styled from 'styled-components'
 import {
-    Col,
-    Input,
+    InputNumber,
     Select,
     Button,
     Icon,
-    Table,
     ConfigProvider,
     Spin,
-    Drawer,
-    Pagination,
-    Modal,
-    Collapse,
     notification
 } from 'antd'
 import swalCustomize from '@sweetalert/with-react'
@@ -26,8 +20,6 @@ import Loading from '../components/functions/Loading'
 import ConnectionFailed from '../components/functions/ConnectionFailed'
 import Empty from '../components/icons/Empty'
 import displayDateFotmat from '../functions/displayDateFotmat'
-
-const { Option } = Select
 
 const ThisContainer = styled(Container)`
     &.hidden {
@@ -47,7 +39,7 @@ const ScoreRow = styled(Row)`
 const CardShield =  styled.div`
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: ${props => props.alignment === "left" ? "flex-start" : "center"};
     flex-direction: column;
 `
 
@@ -56,7 +48,7 @@ const Card = styled.div`
     width: 100%;
     background-color: rgb(255, 255, 255);
     box-shadow: rgba(0, 0, 0, 0.2) 1px 1px 5px;
-    padding: 50px 15px;
+    padding: 50px 20px;
     margin-bottom: 30px;
     border-radius: 10px;
     text-overflow: ellipsis;
@@ -79,12 +71,12 @@ const Card = styled.div`
     .salary-group {
         font-size: 1.25rem;
         margin-bottom: 0;
-        text-align: center;
+        text-align: left;
     }
 
     div.arrow-icon {
         position: absolute;
-        right: 8px;
+        right: 12px;
         top: 54px;
         margin: 0;
     }
@@ -128,8 +120,21 @@ const CustomizedSpin = styled(Spin)`
 
 const HorizontalLine = styled.div`
     border-bottom: 1px solid #e8e8e8;
-    margin: 10px 0;
+    margin-top: 5px;
+    margin-bottom: 10px;
     padding: 0;
+`
+
+const StyledInputNumber = styled(InputNumber)`
+    margin-right: 5px;
+
+    &.ant-input-number {
+        width: 40px;
+
+        .ant-input-number-handler-wrap {
+            display: none;
+        }
+    }
 `
 
 function mapStateToProps(state) {
@@ -141,6 +146,7 @@ function Score(props) {
     const [getData, setGetData] = useState(setInitialState('getData'))
     const [afterGettingdata, setAfterGettingData] = useState(setInitialState('afterGettingdata'))
     const [displayElements, setDisplayElements] = useState(setInitialState('displayElements'))
+    const [candidatesData, setCandidatesData] = useState(setInitialState('candidatesData'))
 
     const customizeRenderEmpty = () => (
         <div 
@@ -241,8 +247,14 @@ function Score(props) {
             case 'getData':
                 return undefined
 
+            case 'displayElements':
+                return ''
+
             case 'afterGettingdata':
                 return 0
+
+            case 'candidatesData':
+                return []
 
             default:
                 break
@@ -286,8 +298,6 @@ function Score(props) {
 
                     setAfterGettingData(1)
 
-                    getCandidatesData()
-
                     if(type === 'again') {
                         notification['success']({
                             message: 'แจ้งเตือน',
@@ -304,49 +314,247 @@ function Score(props) {
         }, timer || 0)
     }
 
-    function getCandidatesData() {
-        axios.get(`${props.url}/getcandidates`, {
-            headers: {
-                'authorization': props.token
-            }
+    function getCandidatesData(type) {
+        // type === 1 -> สัญญาบัตร
+        // type === 2 -> ประทวน
+        swalCustomize({
+            buttons: false,
+            closeOnClickOutside: false,
+            closeOnEsc: false,
+            content: (
+                <div style={{
+                    color: 'rgba(0, 0, 0, 0.65)',
+                    padding: '0.5rem 1rem',
+                    border: 0,
+                }}>
+                    <div style={{
+                        fontSize: '1.25rem',
+                        fontWeight: 500,
+                        marginTop: '1rem',
+                        marginBottom: '1rem',
+                    }}>
+                        กำลังอ่านข้อมูล
+                    </div>
+                    <CustomizedSpin size="large" />
+                </div>
+            )
         })
-        .then(res => {
-            const response = res.data
 
-            console.log(response)
-        })
-        .catch((err) => {
-            console.log(err)
-        })
+        setTimeout(() => {
+            axios.get(`${props.url}/getcandidates/${type}`, {
+                headers: {
+                    'authorization': props.token
+                }
+            })
+            .then(res => {
+                const response = res.data
+    
+                console.log(response)
+                setCandidatesData(response.data)
+                swalCustomize.close()
+            })
+            .catch((err) => {
+                console.log(err)
+                swalCustomize.close()
+            })
+        }, 250)
+    }
+
+    function renderOptionList() {
+        return (
+            <>
+                <Card className="animated fadeIn" onClick={() => getCandidatesData(1)}>
+                    <p className="salary-group">กลุ่ม นายทหารสัญญาบัตร</p>
+                    <div className="arrow-icon">
+                        <Icon
+                            type="caret-right"
+                            style={{
+                                fontSize: "1.5rem"
+                            }}
+                        />
+                    </div>
+                </Card>
+                <Card className="the-last-one animated fadeIn" onClick={() => getCandidatesData(2)}>
+                    <p className="salary-group">กลุ่ม นายทหารประทวน</p>
+                    <div className="arrow-icon">
+                        <Icon
+                            type="caret-right"
+                            style={{
+                                fontSize: "1.5rem"
+                            }}
+                        />
+                    </div>
+                </Card>
+            </>
+        )
+    }
+
+    function renderCandidatesList() {
+        return (
+            <div
+                className="animated fadeIn"
+                style={{
+                    textAlign: "left",
+                    width: "100%"
+                }}
+            >
+                <Button
+                    style={{
+                        marginBottom: 15
+                    }}
+                    onClick={() => setCandidatesData(setInitialState('candidatesData'))}
+                >
+                    <Icon type="caret-left" /> กลับ
+                </Button>
+                {candidatesData.map((arrayType, indexA) => {
+                    return (
+                        <div
+                            key={indexA}
+                            style={{
+                                marginBottom: 30
+                            }}
+                        >
+                            <p
+                                style={{
+                                    marginBottom: 0,
+                                    fontSize: 16,
+                                    fontWeight: "bold"
+                                }}
+                            >
+                                {arrayType[0].salary_group}
+                            </p>
+                            <HorizontalLine />
+                            {arrayType.map((item, indexB) => {
+                                return (
+                                    <div
+                                        key={indexB}
+                                        style={{
+                                            marginBottom: 10
+                                        }}
+                                    >
+                                        <p style={{
+                                            marginBottom: 0
+                                        }}>
+                                            {`${item.rank} ${item.fname} ${item.lname}`}
+                                        </p>
+                                        <StyledInputNumber
+                                            type="number"
+                                            size="small"
+                                            min={0}
+                                            max={999} 
+                                            placeholder="0"
+                                        />
+                                        <StyledInputNumber
+                                            type="number"
+                                            size="small"
+                                            min={0}
+                                            max={999} 
+                                            placeholder="0"
+                                        />
+                                        <StyledInputNumber
+                                            type="number"
+                                            size="small"
+                                            min={0}
+                                            max={999} 
+                                            placeholder="0"
+                                        />
+                                        <StyledInputNumber
+                                            type="number"
+                                            size="small"
+                                            min={0}
+                                            max={999} 
+                                            placeholder="0"
+                                        />
+                                        <StyledInputNumber
+                                            type="number"
+                                            size="small"
+                                            min={0}
+                                            max={999} 
+                                            placeholder="0"
+                                        />
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    )
+                })}
+            </div>
+        )
+
+        // return (
+        //     <div
+        //         className="animated fadeIn"
+        //         style={{
+        //             textAlign: "left",
+        //             width: "100%"
+        //         }}
+        //     >
+        //         <Button
+        //             style={{
+        //                 marginBottom: 15
+        //             }}
+        //             onClick={() => setCandidatesData(setInitialState('candidatesData'))}
+        //         >
+        //             <Icon type="caret-left" /> กลับ
+        //         </Button>
+        //         <p style={{
+        //             marginBottom: 0
+        //         }}>น.4-5</p>
+        //         <HorizontalLine />
+        //         <div>
+        //             <p style={{
+        //                 marginBottom: 0
+        //             }}>
+        //                 พ.อ. พชรพล ปลื้มใจ
+        //             </p>
+        //             <StyledInputNumber
+        //                 type="number"
+        //                 size="small"
+        //                 min={0}
+        //                 max={100} 
+        //                 placeholder="0"
+        //             />
+        //             <StyledInputNumber
+        //                 type="number"
+        //                 size="small"
+        //                 min={0}
+        //                 max={100} 
+        //                 placeholder="0"
+        //             />
+        //             <StyledInputNumber
+        //                 type="number"
+        //                 size="small"
+        //                 min={0}
+        //                 max={100} 
+        //                 placeholder="0"
+        //             />
+        //             <StyledInputNumber
+        //                 type="number"
+        //                 size="small"
+        //                 min={0}
+        //                 max={100} 
+        //                 placeholder="0"
+        //             />
+        //             <StyledInputNumber
+        //                 type="number"
+        //                 size="small"
+        //                 min={0}
+        //                 max={100} 
+        //                 placeholder="0"
+        //             />
+        //         </div>
+        //     </div>
+        // )
     }
 
     function renderScoreContent() {
         return (
             <div>
                 <MainTitle title="กรุณาเลือกกลุ่มที่ต้องการลงคะแนน" />
-                <CardShield>
-                    <Card>
-                        <p className="salary-group">กลุ่ม นายทหารสัญญาบัตร</p>
-                        <div className="arrow-icon">
-                            <Icon
-                                type="caret-right"
-                                style={{
-                                    fontSize: "1.5rem"
-                                }}
-                            />
-                        </div>
-                    </Card>
-                    <Card className="the-last-one">
-                        <p className="salary-group">กลุ่ม นายทหารประทวน</p>
-                        <div className="arrow-icon">
-                            <Icon
-                                type="caret-right"
-                                style={{
-                                    fontSize: "1.5rem"
-                                }}
-                            />
-                        </div>
-                    </Card>
+                <CardShield alignment={candidatesData.length > 0 ? "left" : "center"}>
+                    {candidatesData.length > 0 ?
+                    renderCandidatesList() :
+                    renderOptionList()}
                 </CardShield>
             </div>
         )
