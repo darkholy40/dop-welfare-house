@@ -15,6 +15,7 @@ import Row from '../components/layouts/Row'
 import Loading from '../components/functions/Loading'
 import useInterval from '../functions/useInterval'
 import swalCustomize from '@sweetalert/with-react'
+import logo from '../images/logo.png'
 
 const HomeContainer = styled(Container)`
     padding: 2rem 1rem;
@@ -36,11 +37,14 @@ const Block = styled.div`
     padding: ${props => props.padding === false ? 0 : '0.75rem 0'};
 `
 
+const MyImage = styled.img`
+    max-width: 150px;
+`
+
 const Title = styled.p`
     text-align: center;
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     margin: 10px;
-    white-space: nowrap;
 `
 
 const Description = styled.p`
@@ -334,8 +338,14 @@ function Home(props) {
             <HomeRow>
                 <Block>
                     <Center xs={24}>
-                        <Title>กรุณาเลือกตำแหน่งของท่าน</Title>
-                        <Description>เพื่อเข้าสู่การกรอกให้คะแนนผู้เสนอขอบ้านพัก</Description>
+                        <MyImage src={logo} />
+                        <Title>ระบบงานจัดกำลังพลเข้าบ้านพัก กพ.ทบ.</Title>
+                    </Center>
+                </Block>
+                <Block>
+                    <Center xs={24}>
+                        <Description>กรุณาเลือกตำแหน่งของท่าน</Description>
+                        <Description>เพื่อเข้าสู่ขั้นตอนการให้คะแนนผู้เสนอขอบ้านพัก</Description>
                     </Center>
                 </Block>
                 <HorizontalLine />
