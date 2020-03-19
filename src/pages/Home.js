@@ -5,10 +5,9 @@ import axios from 'axios'
 import styled from 'styled-components'
 import {
     Col,
-    Input,
-    Button,
     Icon,
-    Spin
+    Spin,
+    notification
 } from 'antd'
 
 import Container from '../components/layouts/Container'
@@ -49,10 +48,6 @@ const Description = styled.p`
     font-size: 1rem;
     margin: 0;
     color: rgb(150, 150, 150);
-`
-
-const Error = styled.div`
-    color: red;
 `
 
 const Center = styled(Col)`
@@ -117,13 +112,8 @@ function mapStateToProps(state) {
 function Home(props) {
     const [homeContainerClass, setHomeContainerClass] = useState(setInitialState('homeContainerClass'))
     const [username, setUsername] = useState(setInitialState('username'))
-    const [password, setPassword] = useState(setInitialState('password'))
-    const [loginButtonState, setLoginButtonState] = useState(setInitialState('loginButtonState'))
-
     const [allAgents, setAllAgents] = useState(setInitialState('allAgents'))
-
     const [isLoggedIn, setLoggedIn] = useState(setInitialState('isLoggedIn'))
-    const [errorType, setErrorType] = useState(setInitialState('errorType'))
     const [urlToken, setUrlToken] = useState('')
 
     useEffect(() => {
@@ -138,14 +128,6 @@ function Home(props) {
             setHomeContainerClass('animated fadeIn')
         }, 25)
     }, [])
-
-    useEffect(() => {
-        if(username !== '' && password !== '') {
-            setLoginButtonState('enable') // enable
-        } else {
-            setLoginButtonState(setInitialState('loginButtonState')) // disable
-        }
-    }, [username, password])
 
     useEffect(() => {
         if(isLoggedIn === true) {
@@ -168,23 +150,14 @@ function Home(props) {
             case 'homeContainerClass':
                 return 'hidden'
 
-            case 'loginButtonState':
-                return 'disable'
-
             case 'allAgents':
                 return []
 
             case 'username':
                 return props.username
 
-            case 'password':
-                return ''
-
             case 'isLoggedIn':
                 return false
-
-            case 'errorType':
-                return 0
 
             default:
                 break
@@ -230,8 +203,6 @@ function Home(props) {
                 </div>
             )
         })
-        setErrorType(setInitialState('errorType')) // Remove any error notification
-        setLoginButtonState('loading') // disable + loading
         setUsername(getUsername)
 
         setTimeout(() => {
@@ -280,19 +251,24 @@ function Home(props) {
                         })
                         break
     
-                    case '00201':
-                        setErrorType(4) // Role is 0
-                        setLoginButtonState('enable') // enable
-                        break
-    
                     case '00401':
-                        setErrorType(3) // Access denied to DB or out of service
-                        setLoginButtonState('enable') // enable
+                        notification['warning']({
+                            message: 'แจ้งเตือน',
+                            description: displayError(3),
+                            duration: 4,
+                        })
+
+                        // setErrorType(3) // Access denied to DB or out of service
                         break
     
                     case '00404':
-                        setErrorType(1) // Username or password was incorrect
-                        setLoginButtonState('disable') // disable
+                        notification['warning']({
+                            message: 'แจ้งเตือน',
+                            description: displayError(1),
+                            duration: 4,
+                        })
+
+                        // setErrorType(1) // Username or password was incorrect
                         break
                 
                     default:
@@ -300,9 +276,14 @@ function Home(props) {
                 }
             })
             .catch((err) => {
-                console.log(err)
-                setErrorType(2) // Can't connect to gateway
-                setLoginButtonState('enable') // enable
+                swalCustomize.close()
+                notification['warning']({
+                    message: 'แจ้งเตือน',
+                    description: displayError(2),
+                    duration: 4,
+                })
+
+                // setErrorType(2) // Can't connect to gateway
             })
         }, 500)
     }
@@ -316,22 +297,22 @@ function Home(props) {
         }, 500)
     }
 
-    function displayError() {
-        switch (errorType) {
+    function displayError(value) {
+        switch (value) {
             case 1:
-                return <Error>ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง!</Error>
+                return `ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง!`
 
             case 2:
-                return <Error>ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ปลายทางได้!</Error>
+                return `ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ปลายทางได้!`
         
             case 3:
-                return <Error>ไม่สามารถเชื่อมต่อฐานข้อมูลได้!</Error>
+                return `ไม่สามารถเชื่อมต่อฐานข้อมูลได้!`
 
             case 4:
-                return <Error>ชื่อผู้ใช้ "{username}" ไม่มีสิทธิ์เข้าใช้งานระบบ</Error>
+                return `ชื่อผู้ใช้ "${username}" ไม่มีสิทธิ์เข้าใช้งานระบบ`
 
             default:
-                return <Error></Error>
+                return ``
         }
     }
 
