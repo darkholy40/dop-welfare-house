@@ -363,6 +363,17 @@ function Score(props) {
     function renderOptionList() {
         return (
             <>
+                <p
+                    className="animated fadeIn"
+                    style={{
+                        textAlign: "left",
+                        fontSize: 16,
+                        width: "100%",
+                        marginBottom: 16
+                    }}
+                >
+                    กรุณาเลือกกลุ่มที่ต้องการให้คะแนน
+                </p>
                 <Card className="animated fadeIn" onClick={() => getCandidatesData(1)}>
                     <p className="salary-group">กลุ่ม นายทหารสัญญาบัตร</p>
                     <div className="arrow-icon">
@@ -441,35 +452,35 @@ function Score(props) {
                                             type="number"
                                             size="small"
                                             min={0}
-                                            max={999} 
+                                            max={99} 
                                             placeholder="0"
                                         />
                                         <StyledInputNumber
                                             type="number"
                                             size="small"
                                             min={0}
-                                            max={999} 
+                                            max={99} 
                                             placeholder="0"
                                         />
                                         <StyledInputNumber
                                             type="number"
                                             size="small"
                                             min={0}
-                                            max={999} 
+                                            max={99} 
                                             placeholder="0"
                                         />
                                         <StyledInputNumber
                                             type="number"
                                             size="small"
                                             min={0}
-                                            max={999} 
+                                            max={99} 
                                             placeholder="0"
                                         />
                                         <StyledInputNumber
                                             type="number"
                                             size="small"
                                             min={0}
-                                            max={999} 
+                                            max={99} 
                                             placeholder="0"
                                         />
                                     </div>
@@ -550,7 +561,7 @@ function Score(props) {
     function renderScoreContent() {
         return (
             <div>
-                <MainTitle title="กรุณาเลือกกลุ่มที่ต้องการลงคะแนน" />
+                <MainTitle title="กรรมการให้คะแนน" />
                 <CardShield alignment={candidatesData.length > 0 ? "left" : "center"}>
                     {candidatesData.length > 0 ?
                     renderCandidatesList() :
