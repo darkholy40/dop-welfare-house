@@ -447,6 +447,8 @@ function Score(props) {
                     <Icon type="caret-left" /> กลับ
                 </Button>
                 {candidatesData.map((arrayType, indexA) => {
+                    let checkApproved = 1
+
                     return (
                         <div
                             key={indexA}
@@ -465,6 +467,10 @@ function Score(props) {
                             </p>
                             <HorizontalLine />
                             {arrayType.map((item, indexB) => {
+                                if(item.is_approved === 0) {
+                                    checkApproved = 0
+                                }
+
                                 return (
                                     <div
                                         key={indexB}
@@ -483,6 +489,8 @@ function Score(props) {
                                             min={0}
                                             max={99} 
                                             placeholder="0"
+                                            disabled={item.is_approved > 0 && true}
+                                            defaultValue={item.is_approved > 0 ? item.score_first : ""}
                                         />
                                         <StyledInputNumber
                                             type="number"
@@ -490,6 +498,8 @@ function Score(props) {
                                             min={0}
                                             max={99} 
                                             placeholder="0"
+                                            disabled={item.is_approved > 0 && true}
+                                            defaultValue={item.is_approved > 0 ? item.score_second : ""}
                                         />
                                         <StyledInputNumber
                                             type="number"
@@ -497,6 +507,8 @@ function Score(props) {
                                             min={0}
                                             max={99} 
                                             placeholder="0"
+                                            disabled={item.is_approved > 0 && true}
+                                            defaultValue={item.is_approved > 0 ? item.score_third : ""}
                                         />
                                         <StyledInputNumber
                                             type="number"
@@ -504,6 +516,8 @@ function Score(props) {
                                             min={0}
                                             max={99} 
                                             placeholder="0"
+                                            disabled={item.is_approved > 0 && true}
+                                            defaultValue={item.is_approved > 0 ? item.score_fourth : ""}
                                         />
                                         <StyledInputNumber
                                             type="number"
@@ -511,10 +525,22 @@ function Score(props) {
                                             min={0}
                                             max={99} 
                                             placeholder="0"
+                                            disabled={item.is_approved > 0 && true}
+                                            defaultValue={item.is_approved > 0 ? item.score_fifth : ""}
                                         />
                                     </div>
                                 )
                             })}
+                            {checkApproved ?
+                            <p
+                                style={{
+                                    display: "inline-block",
+                                    marginTop: 10,
+                                    color: "rgb(100, 200, 100)"
+                                }}
+                            >
+                                <Icon type="check" /> บันทึกแล้ว
+                            </p> :
                             <Button
                                 style={{
                                     marginTop: 10
@@ -522,7 +548,7 @@ function Score(props) {
                                 type="primary"
                             >
                                 <Icon type="save" theme="filled" /> บันทีก
-                            </Button>
+                            </Button>}
                         </div>
                     )
                 })}
