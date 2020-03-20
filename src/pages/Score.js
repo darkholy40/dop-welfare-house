@@ -486,6 +486,14 @@ function Score(props) {
                                     </div>
                                 )
                             })}
+                            <Button
+                                style={{
+                                    marginTop: 10
+                                }}
+                                type="primary"
+                            >
+                                <Icon type="save" theme="filled" /> บันทีก
+                            </Button>
                         </div>
                     )
                 })}
