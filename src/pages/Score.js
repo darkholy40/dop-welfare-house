@@ -147,6 +147,7 @@ function Score(props) {
     const [afterGettingdata, setAfterGettingData] = useState(setInitialState('afterGettingdata'))
     const [displayElements, setDisplayElements] = useState(setInitialState('displayElements'))
     const [candidatesData, setCandidatesData] = useState(setInitialState('candidatesData'))
+    const [dataToSend, setDataToSend] = useState(setInitialState('dataToSend'))
 
     const customizeRenderEmpty = () => (
         <div 
@@ -254,6 +255,7 @@ function Score(props) {
                 return 0
 
             case 'candidatesData':
+            case 'dataToSend':
                 return []
 
             default:
@@ -343,7 +345,8 @@ function Score(props) {
         setTimeout(() => {
             axios.get(`${props.url}/getcandidates/${type}`, {
                 headers: {
-                    'authorization': props.token
+                    'authorization': props.token,
+                    'agent_id': props.userData.id
                 }
             })
             .then(res => {
@@ -351,6 +354,7 @@ function Score(props) {
     
                 console.log(response)
                 setCandidatesData(response.data)
+                formatDataToSend(response.data)
                 swalCustomize.close()
             })
             .catch((err) => {
@@ -358,6 +362,31 @@ function Score(props) {
                 swalCustomize.close()
             })
         }, 250)
+    }
+
+    function formatDataToSend(getArrObj) {
+        const candidatesListData = getArrObj
+        let arrayResult = []
+
+        for(let i=0; i<candidatesListData.length; i++) {
+            arrayResult[i] = []
+            for(let j=0; j<candidatesListData[i].length; j++) {
+                arrayResult[i][j] = {
+                    agent_is: props.userData.id,
+                    candidate_id: candidatesListData[i][j].id,
+                    score_first: candidatesListData[i][j].score_first,
+                    score_second: candidatesListData[i][j].score_second,
+                    score_third: candidatesListData[i][j].score_third,
+                    score_fourth: candidatesListData[i][j].score_fourth,
+                    score_fifth: candidatesListData[i][j].score_fifth,
+                    is_approved: candidatesListData[i][j].is_approved
+                }
+            }
+        }
+
+        console.log(arrayResult)
+        setDataToSend(arrayResult)
+        return 0
     }
 
     function renderOptionList() {
