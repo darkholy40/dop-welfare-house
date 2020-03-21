@@ -243,6 +243,10 @@ function Score(props) {
         }
     }, [afterGettingdata])
 
+    // useEffect(() => {
+    //     console.log(dataToSend)
+    // }, [dataToSend])
+
     function setInitialState(stateName) {
         switch (stateName) {
             case 'getData':
@@ -255,8 +259,10 @@ function Score(props) {
                 return 0
 
             case 'candidatesData':
-            case 'dataToSend':
                 return []
+
+            case 'dataToSend':
+                return {}
 
             default:
                 break
@@ -366,12 +372,12 @@ function Score(props) {
 
     function formatDataToSend(getArrObj) {
         const candidatesListData = getArrObj
-        let arrayResult = []
+        let arrayResult = {}
 
         for(let i=0; i<candidatesListData.length; i++) {
-            arrayResult[i] = []
+            arrayResult[`group_${i}`] = {}
             for(let j=0; j<candidatesListData[i].length; j++) {
-                arrayResult[i][j] = {
+                arrayResult[`group_${i}`][`person_${j}`] = {
                     agent_is: props.userData.id,
                     candidate_id: candidatesListData[i][j].id,
                     score_first: candidatesListData[i][j].score_first,
@@ -387,6 +393,20 @@ function Score(props) {
         console.log(arrayResult)
         setDataToSend(arrayResult)
         return 0
+    }
+
+    function saveScore(value, typeText, groupNumber, personNumber) {
+        const group = `group_${groupNumber}`
+        const person = `person_${personNumber}`
+        const type = typeText
+
+        setDataToSend({...dataToSend,  [group]: {
+            ...dataToSend[group],
+            [person]: {
+                ...dataToSend[group][person],
+                [type]: value
+            }
+       }})
     }
 
     function renderOptionList() {
@@ -490,7 +510,9 @@ function Score(props) {
                                             max={99} 
                                             placeholder="0"
                                             disabled={item.is_approved > 0 && true}
-                                            defaultValue={item.is_approved > 0 ? item.score_first : ""}
+                                            // defaultValue={item.is_approved > 0 ? item.score_first : ""}
+                                            value={dataToSend[`group_${indexA}`] !== undefined ? dataToSend[`group_${indexA}`][`person_${indexB}`].score_first : ""}
+                                            onChange={(value) => saveScore(value, 'score_first', indexA, indexB)}
                                         />
                                         <StyledInputNumber
                                             type="number"
@@ -499,7 +521,9 @@ function Score(props) {
                                             max={99} 
                                             placeholder="0"
                                             disabled={item.is_approved > 0 && true}
-                                            defaultValue={item.is_approved > 0 ? item.score_second : ""}
+                                            // defaultValue={item.is_approved > 0 ? item.score_second : ""}
+                                            value={dataToSend[`group_${indexA}`] !== undefined ? dataToSend[`group_${indexA}`][`person_${indexB}`].score_second : ""}
+                                            onChange={(value) => saveScore(value, 'score_second', indexA, indexB)}
                                         />
                                         <StyledInputNumber
                                             type="number"
@@ -508,7 +532,9 @@ function Score(props) {
                                             max={99} 
                                             placeholder="0"
                                             disabled={item.is_approved > 0 && true}
-                                            defaultValue={item.is_approved > 0 ? item.score_third : ""}
+                                            // defaultValue={item.is_approved > 0 ? item.score_third : ""}
+                                            value={dataToSend[`group_${indexA}`] !== undefined ? dataToSend[`group_${indexA}`][`person_${indexB}`].score_third : ""}
+                                            onChange={(value) => saveScore(value, 'score_third', indexA, indexB)}
                                         />
                                         <StyledInputNumber
                                             type="number"
@@ -517,7 +543,9 @@ function Score(props) {
                                             max={99} 
                                             placeholder="0"
                                             disabled={item.is_approved > 0 && true}
-                                            defaultValue={item.is_approved > 0 ? item.score_fourth : ""}
+                                            // defaultValue={item.is_approved > 0 ? item.score_fourth : ""}
+                                            value={dataToSend[`group_${indexA}`] !== undefined ? dataToSend[`group_${indexA}`][`person_${indexB}`].score_fourth : ""}
+                                            onChange={(value) => saveScore(value, 'score_fourth', indexA, indexB)}
                                         />
                                         <StyledInputNumber
                                             type="number"
@@ -526,7 +554,9 @@ function Score(props) {
                                             max={99} 
                                             placeholder="0"
                                             disabled={item.is_approved > 0 && true}
-                                            defaultValue={item.is_approved > 0 ? item.score_fifth : ""}
+                                            // defaultValue={item.is_approved > 0 ? item.score_fifth : ""}
+                                            value={dataToSend[`group_${indexA}`] !== undefined ? dataToSend[`group_${indexA}`][`person_${indexB}`].score_fifth : ""}
+                                            onChange={(value) => saveScore(value, 'score_fifth', indexA, indexB)}
                                         />
                                     </div>
                                 )
