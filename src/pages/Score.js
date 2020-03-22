@@ -137,6 +137,11 @@ const StyledInputNumber = styled(InputNumber)`
     }
 `
 
+const TotalScoreEachPerson = styled.span`
+    padding-left: 5px;
+    color: rgb(100, 200, 100);
+`
+
 function mapStateToProps(state) {
     return state
 }
@@ -243,9 +248,9 @@ function Score(props) {
         }
     }, [afterGettingdata])
 
-    // useEffect(() => {
-    //     console.log(dataToSend)
-    // }, [dataToSend])
+    useEffect(() => {
+        console.log(dataToSend)
+    }, [dataToSend])
 
     function setInitialState(stateName) {
         switch (stateName) {
@@ -378,14 +383,18 @@ function Score(props) {
             arrayResult[`group_${i}`] = {}
             for(let j=0; j<candidatesListData[i].length; j++) {
                 arrayResult[`group_${i}`][`person_${j}`] = {
-                    agent_is: props.userData.id,
+                    agent_id: props.userData.id,
                     candidate_id: candidatesListData[i][j].id,
                     score_first: candidatesListData[i][j].score_first,
                     score_second: candidatesListData[i][j].score_second,
                     score_third: candidatesListData[i][j].score_third,
                     score_fourth: candidatesListData[i][j].score_fourth,
                     score_fifth: candidatesListData[i][j].score_fifth,
-                    is_approved: candidatesListData[i][j].is_approved
+                    is_approved: candidatesListData[i][j].is_approved,
+                    rank: candidatesListData[i][j].rank,
+                    fname: candidatesListData[i][j].fname,
+                    lname: candidatesListData[i][j].lname,
+                    salary_group: candidatesListData[i][j].salary_group
                 }
             }
         }
@@ -406,7 +415,49 @@ function Score(props) {
                 ...dataToSend[group][person],
                 [type]: value
             }
-       }})
+        }})
+    }
+
+    function markApprove(groupKeyName) {
+        let newData = {}
+        console.log(dataToSend[groupKeyName])
+        Object.keys(dataToSend[groupKeyName]).map((personKeyName) => {
+            newData = {
+                ...newData,
+                [personKeyName]: {
+                    ...dataToSend[groupKeyName][personKeyName],
+                    is_approved: 1
+                }
+            }
+
+            return 0
+        })
+
+        console.log(newData)
+
+        setDataToSend({...dataToSend, 
+            [groupKeyName]: newData
+        })
+    }
+
+    function sendScoreDate(selectedGroup) {
+        const dataForSending = dataToSend[selectedGroup]
+        console.log(dataForSending)
+
+        axios.post(`${props.url}/candidates/score/save`, {
+            groupData: dataForSending,
+        })
+        .then(res => {
+            if(res.data.code === '00200') {
+                console.log("บันทึกข้อมูล เรียบร้อย")
+                markApprove(selectedGroup)
+            } else {
+                console.log("ไม่สามารถบันทึกข้อมูล")
+            }
+        })
+        .catch((err) => {
+            console.log(err)
+        })
     }
 
     function renderOptionList() {
@@ -450,6 +501,17 @@ function Score(props) {
     }
 
     function renderCandidatesList() {
+        function displayTotalScoreEachPerson(num1, num2, num3, num4, num5) {
+            const first = parseInt(num1) > 0 ? num1 : 0
+            const second = parseInt(num2) > 0 ? num2 : 0
+            const third = parseInt(num3) > 0 ? num3 : 0
+            const fourth = parseInt(num4) > 0 ? num4 : 0
+            const fifth = parseInt(num5) > 0 ? num5 : 0
+            const result = first + second + third + fourth + fifth > 40 ? 40 : first + second + third + fourth + fifth
+
+            return result
+        }
+
         return (
             <div
                 className="animated fadeIn"
@@ -466,7 +528,7 @@ function Score(props) {
                 >
                     <Icon type="caret-left" /> กลับ
                 </Button>
-                {candidatesData.map((arrayType, indexA) => {
+                {Object.keys(dataToSend).map((groupKeyName, indexA) => {
                     let checkApproved = 1
 
                     return (
@@ -483,10 +545,11 @@ function Score(props) {
                                     fontWeight: "bold"
                                 }}
                             >
-                                {arrayType[0].salary_group}
+                                {dataToSend[groupKeyName][`person_0`].salary_group}
                             </p>
                             <HorizontalLine />
-                            {arrayType.map((item, indexB) => {
+                            {Object.keys(dataToSend[groupKeyName]).map((personKeyName, indexB) => {
+                                const item = dataToSend[groupKeyName][personKeyName]
                                 if(item.is_approved === 0) {
                                     checkApproved = 0
                                 }
@@ -511,7 +574,7 @@ function Score(props) {
                                             placeholder="0"
                                             disabled={item.is_approved > 0 && true}
                                             // defaultValue={item.is_approved > 0 ? item.score_first : ""}
-                                            value={dataToSend[`group_${indexA}`] !== undefined ? dataToSend[`group_${indexA}`][`person_${indexB}`].score_first : ""}
+                                            value={item !== null ? item.score_first : ""}
                                             onChange={(value) => saveScore(value, 'score_first', indexA, indexB)}
                                         />
                                         <StyledInputNumber
@@ -522,7 +585,7 @@ function Score(props) {
                                             placeholder="0"
                                             disabled={item.is_approved > 0 && true}
                                             // defaultValue={item.is_approved > 0 ? item.score_second : ""}
-                                            value={dataToSend[`group_${indexA}`] !== undefined ? dataToSend[`group_${indexA}`][`person_${indexB}`].score_second : ""}
+                                            value={item !== null ? item.score_second : ""}
                                             onChange={(value) => saveScore(value, 'score_second', indexA, indexB)}
                                         />
                                         <StyledInputNumber
@@ -533,7 +596,7 @@ function Score(props) {
                                             placeholder="0"
                                             disabled={item.is_approved > 0 && true}
                                             // defaultValue={item.is_approved > 0 ? item.score_third : ""}
-                                            value={dataToSend[`group_${indexA}`] !== undefined ? dataToSend[`group_${indexA}`][`person_${indexB}`].score_third : ""}
+                                            value={item !== null ? item.score_third : ""}
                                             onChange={(value) => saveScore(value, 'score_third', indexA, indexB)}
                                         />
                                         <StyledInputNumber
@@ -544,7 +607,7 @@ function Score(props) {
                                             placeholder="0"
                                             disabled={item.is_approved > 0 && true}
                                             // defaultValue={item.is_approved > 0 ? item.score_fourth : ""}
-                                            value={dataToSend[`group_${indexA}`] !== undefined ? dataToSend[`group_${indexA}`][`person_${indexB}`].score_fourth : ""}
+                                            value={item !== null ? item.score_fourth : ""}
                                             onChange={(value) => saveScore(value, 'score_fourth', indexA, indexB)}
                                         />
                                         <StyledInputNumber
@@ -555,27 +618,48 @@ function Score(props) {
                                             placeholder="0"
                                             disabled={item.is_approved > 0 && true}
                                             // defaultValue={item.is_approved > 0 ? item.score_fifth : ""}
-                                            value={dataToSend[`group_${indexA}`] !== undefined ? dataToSend[`group_${indexA}`][`person_${indexB}`].score_fifth : ""}
+                                            value={item !== null ? item.score_fifth : ""}
                                             onChange={(value) => saveScore(value, 'score_fifth', indexA, indexB)}
                                         />
+                                        <TotalScoreEachPerson>
+                                            {displayTotalScoreEachPerson(item.score_first, item.score_second, item.score_third, item.score_fourth, item.score_fifth)}
+                                        </TotalScoreEachPerson>
                                     </div>
                                 )
                             })}
                             {checkApproved ?
-                            <p
+                            <div
                                 style={{
                                     display: "inline-block",
                                     marginTop: 10,
+                                    lineHeight: 1.5,
+                                    height: 32,
+                                    padding: "0 15px",
                                     color: "rgb(100, 200, 100)"
                                 }}
                             >
-                                <Icon type="check" /> บันทึกแล้ว
-                            </p> :
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        height: "100%"
+                                    }}
+                                >
+                                    <p
+                                        style={{
+                                            marginBottom: 0
+                                        }}
+                                    >
+                                        <Icon type="check" /> บันทึกแล้ว
+                                    </p>
+                                </div>
+                            </div> :
                             <Button
                                 style={{
                                     marginTop: 10
                                 }}
                                 type="primary"
+                                onClick={() => sendScoreDate(`group_${indexA}`)}
                             >
                                 <Icon type="save" theme="filled" /> บันทีก
                             </Button>}
