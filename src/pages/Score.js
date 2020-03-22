@@ -78,6 +78,13 @@ const Card = styled.div`
         top: 54px;
         margin: 0;
     }
+
+    div.passed {
+        position: absolute;
+        left: 30px;
+        top: -30px;
+        margin: 0;
+    }
 `
 
 const ErrorBlock = styled.div`
@@ -147,6 +154,7 @@ function Score(props) {
     const [candidatesData, setCandidatesData] = useState(setInitialState('candidatesData'))
     const [dataToSend, setDataToSend] = useState(setInitialState('dataToSend'))
     const [saveScoreButtons, setSaveScoreButtons] = useState(setInitialState('saveScoreButtons'))
+    const [successRibbons, setSuccessRibbons] = useState(setInitialState('successRibbons'))
 
     const customizeRenderEmpty = () => (
         <div 
@@ -241,6 +249,12 @@ function Score(props) {
                 return setDisplayElements(<Loading />)
         }
     }, [afterGettingdata])
+    
+    useEffect(() => {
+        if(props.userData !== '') {
+            getSuccessRibbon()
+        }
+    }, [props.userData])
 
     function setInitialState(stateName) {
         switch (stateName) {
@@ -258,6 +272,7 @@ function Score(props) {
 
             case 'dataToSend':
             case 'saveScoreButtons':
+            case 'successRibbons': 
                 return {}
 
             default:
@@ -475,6 +490,21 @@ function Score(props) {
         }, 1000)
     }
 
+    function getSuccessRibbon() {
+        axios.get(`${props.url}/verify/approvement`, {
+            headers: {
+                'authorization': props.token,
+                'agent_id': props.userData.id
+            }
+        })
+        .then(res => {
+            const response = res.data
+            setSuccessRibbons(response.data)
+        })
+        .catch(() => {
+            
+        })
+    }
     function renderOptionList() {
         return (
             <>
@@ -499,6 +529,17 @@ function Score(props) {
                             }}
                         />
                     </div>
+                    {successRibbons.row_0 === 1 &&
+                    <div className="passed">
+                        <Icon
+                            type="check-square"
+                            theme="filled"
+                            style={{
+                                fontSize: "12rem",
+                                color: "rgba(100, 200, 100, 0.2)"
+                            }}
+                        />
+                    </div>}
                 </Card>
                 <Card className="the-last-one animated fadeIn" onClick={() => getCandidatesData(2)}>
                     <p className="salary-group">กลุ่ม นายทหารประทวน</p>
@@ -510,6 +551,17 @@ function Score(props) {
                             }}
                         />
                     </div>
+                    {successRibbons.row_1 === 1 &&
+                    <div className="passed">
+                        <Icon
+                            type="check-square"
+                            theme="filled"
+                            style={{
+                                fontSize: "12rem",
+                                color: "rgba(100, 200, 100, 0.2)"
+                            }}
+                        />
+                    </div>}
                 </Card>
             </>
         )
@@ -543,6 +595,7 @@ function Score(props) {
                         setCandidatesData(setInitialState('candidatesData'))
                         setDataToSend(setInitialState('dataToSend'))
                         setSaveScoreButtons(setInitialState('saveScoreButtons'))
+                        getSuccessRibbon()
                     }}
                 >
                     <Icon type="caret-left" /> กลับ
