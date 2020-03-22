@@ -8,6 +8,7 @@ import {
     Icon,
     ConfigProvider,
     Spin,
+    message,
     notification
 } from 'antd'
 import swalCustomize from '@sweetalert/with-react'
@@ -133,12 +134,13 @@ const StyledInputNumber = styled(InputNumber)`
 `
 
 const TotalScoreEachPerson = styled.span`
+    display: inline-block;
     padding-left: 5px;
     color: ${props => props.totalscore < 40 ?
             props.totalscore < 1 ? 
                 `rgb(200, 200, 200)` :
                 `rgb(100, 200, 100)` :
-        `rgb(100, 100, 200)`
+        `rgb(200, 100, 100)`
     };
 `
 
@@ -473,19 +475,16 @@ function Score(props) {
                     setSaveScoreButtons({...saveScoreButtons, [`button_${groupIndex}`]: {
                         status: "complete"
                     }})
+                    message.success('บันทึกข้อมูลสำเร็จ!')
                 } else {
                     // console.log("ไม่มีข้อมูลที่ถูกบันทึก")
                 }
             })
             .catch(() => {
-                notification['warning']({
-                    message: 'แจ้งเตือน',
-                    description: 'บันทึกข้อมูลไม่สำเร็จ กรุณาลองใหม่อีกครั้ง',
-                    duration: 4,
-                })
                 setSaveScoreButtons({...saveScoreButtons, [`button_${groupIndex}`]: {
                     status: "normal"
                 }})
+                message.warning('บันทึกข้อมูลไม่สำเร็จ กรุณาลองใหม่อีกครั้ง!')
             })
         }, 1000)
     }
@@ -710,6 +709,7 @@ function Score(props) {
                                         />
                                         <TotalScoreEachPerson
                                             totalscore={displayTotalScoreEachPerson(item.score_first, item.score_second, item.score_third, item.score_fourth, item.score_fifth)}
+                                            className={displayTotalScoreEachPerson(item.score_first, item.score_second, item.score_third, item.score_fourth, item.score_fifth) === 40 ? "animated heartBeat" : ""}
                                         >
                                             {displayTotalScoreEachPerson(item.score_first, item.score_second, item.score_third, item.score_fourth, item.score_fifth)}
                                         </TotalScoreEachPerson>
@@ -718,7 +718,7 @@ function Score(props) {
                             })}
                             {checkApproved ?
                             <div
-                                className="animated fadeIn"
+                                className="animated bounceIn"
                                 style={{
                                     display: "inline-block",
                                     marginTop: 10,
