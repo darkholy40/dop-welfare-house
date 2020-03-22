@@ -153,6 +153,7 @@ function Score(props) {
     const [getData, setGetData] = useState(setInitialState('getData'))
     const [afterGettingdata, setAfterGettingData] = useState(setInitialState('afterGettingdata'))
     const [displayElements, setDisplayElements] = useState(setInitialState('displayElements'))
+    const [currentCandidateType, setCurrentCandidateType] = useState(setInitialState('currentCandidateType'))
     const [candidatesData, setCandidatesData] = useState(setInitialState('candidatesData'))
     const [dataToSend, setDataToSend] = useState(setInitialState('dataToSend'))
     const [saveScoreButtons, setSaveScoreButtons] = useState(setInitialState('saveScoreButtons'))
@@ -266,6 +267,9 @@ function Score(props) {
             case 'displayElements':
                 return ''
 
+            case 'currentCandidateType':
+                return 0
+
             case 'afterGettingdata':
                 return 0
 
@@ -373,6 +377,7 @@ function Score(props) {
                 setCandidatesData(response.data)
                 formatDataToSend(response.data)
                 swalCustomize.close()
+                setCurrentCandidateType(type)
             })
             .catch(() => {
                 swalCustomize.close()
@@ -471,6 +476,7 @@ function Score(props) {
             .then(res => {
                 if(res.data.code === '00200') {
                     // console.log("บันทึกข้อมูล เรียบร้อย")
+                    getSuccessRibbon() // เนื่องจากต้องการค่าไปตรวจสอบเงื่อนไข สำหรับแสดงข้อความเมื่อทำการบันทึกครบทุก record ของกลุ่มนั้นๆ (น. หรือ ป.)
                     markApprove(selectedGroup)
                     setSaveScoreButtons({...saveScoreButtons, [`button_${groupIndex}`]: {
                         status: "complete"
@@ -523,6 +529,15 @@ function Score(props) {
             }, 3000)
         })
     }
+
+    function handlePressGoBack() {
+        setCandidatesData(setInitialState('candidatesData'))
+        setDataToSend(setInitialState('dataToSend'))
+        setSaveScoreButtons(setInitialState('saveScoreButtons'))
+        setCurrentCandidateType(setInitialState('currentCandidateType'))
+        getSuccessRibbon()
+    }
+
     function renderOptionList() {
         return (
             <>
@@ -609,12 +624,7 @@ function Score(props) {
                     style={{
                         marginBottom: 15
                     }}
-                    onClick={() => {
-                        setCandidatesData(setInitialState('candidatesData'))
-                        setDataToSend(setInitialState('dataToSend'))
-                        setSaveScoreButtons(setInitialState('saveScoreButtons'))
-                        getSuccessRibbon()
-                    }}
+                    onClick={() => handlePressGoBack()}
                 >
                     <Icon type="caret-left" /> กลับ
                 </Button>
@@ -760,6 +770,38 @@ function Score(props) {
                         </div>
                     )
                 })}
+                {(currentCandidateType === 1 && successRibbons.row_0 === 1) || (currentCandidateType === 2 && successRibbons.row_1 === 1) ?
+                <div
+                    className="animated bounceIn"
+                    style={{
+                        textAlign: "center"
+                    }}
+                >
+                    <Icon
+                        type="check-circle"
+                        theme="filled"
+                        style={{
+                            fontSize: "4rem",
+                            color: "rgba(0, 200, 0, 0.8)"
+                        }}
+                    /> 
+                    <p
+                        style={{
+                            margin: "15px 0"
+                        }}
+                    >
+                        ท่านได้ทำการส่งคะแนนของกลุ่มนี้เรียบร้อยแล้ว
+                    </p>
+                    <Button
+                        type="primary"
+                        style={{
+                            marginBottom: "2rem"
+                        }}
+                        onClick={() => handlePressGoBack()}
+                    >
+                        <Icon type="caret-left" /> กลับ
+                    </Button>
+                </div> : ""}
             </div>
         )
     }
