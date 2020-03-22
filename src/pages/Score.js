@@ -374,6 +374,11 @@ function Score(props) {
             .catch((err) => {
                 console.log(err)
                 swalCustomize.close()
+                notification['warning']({
+                    message: 'แจ้งเตือน',
+                    description: 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ปลายทางได้',
+                    duration: 4,
+                })
             })
         }, 250)
     }
@@ -388,7 +393,7 @@ function Score(props) {
             objSaveScoreButton = {
                 ...objSaveScoreButton,
                 [`button_${i}`]: {
-                    status: 'normal'
+                    status: candidatesListData[i][0].is_approved === 1 ? 'complete' : 'normal'
                 }
             }
 
@@ -410,7 +415,6 @@ function Score(props) {
             }
         }
 
-        console.log(objSaveScoreButton)
         setDataToSend(objDataForSending)
         setSaveScoreButtons(objSaveScoreButton)
         return 0
@@ -445,8 +449,6 @@ function Score(props) {
             return 0
         })
 
-        console.log(newData)
-
         setDataToSend({...dataToSend, 
             [groupKeyName]: newData
         })
@@ -466,16 +468,28 @@ function Score(props) {
             })
             .then(res => {
                 if(res.data.code === '00200') {
-                    console.log("บันทึกข้อมูล เรียบร้อย")
+                    // console.log("บันทึกข้อมูล เรียบร้อย")
                     markApprove(selectedGroup)
+                    setSaveScoreButtons({...saveScoreButtons, [`button_${groupIndex}`]: {
+                        status: "complete"
+                    }})
                 } else {
-                    console.log("ไม่สามารถบันทึกข้อมูล")
+                    // console.log("ไม่มีข้อมูลที่ถูกบันทึก")
                 }
             })
             .catch((err) => {
                 console.log(err)
+
+                notification['warning']({
+                    message: 'แจ้งเตือน',
+                    description: 'บันทึกข้อมูลไม่สำเร็จ กรุณาลองใหม่อีกครั้ง',
+                    duration: 4,
+                })
+                setSaveScoreButtons({...saveScoreButtons, [`button_${groupIndex}`]: {
+                    status: "normal"
+                }})
             })
-        }, 500)
+        }, 1000)
     }
 
     function renderOptionList() {
@@ -595,7 +609,7 @@ function Score(props) {
                                             min={0}
                                             max={99} 
                                             placeholder="0"
-                                            disabled={item.is_approved > 0 || buttonStatus === "loading" && true}
+                                            disabled={item.is_approved > 0 || buttonStatus === "loading" ? true : false}
                                             value={item !== null ? item.score_first : ""}
                                             onChange={(value) => saveScore(value, 'score_first', indexA, indexB)}
                                         />
@@ -605,7 +619,7 @@ function Score(props) {
                                             min={0}
                                             max={99} 
                                             placeholder="0"
-                                            disabled={item.is_approved > 0 || buttonStatus === "loading" && true}
+                                            disabled={item.is_approved > 0 || buttonStatus === "loading" ? true : false}
                                             value={item !== null ? item.score_second : ""}
                                             onChange={(value) => saveScore(value, 'score_second', indexA, indexB)}
                                         />
@@ -615,7 +629,7 @@ function Score(props) {
                                             min={0}
                                             max={99} 
                                             placeholder="0"
-                                            disabled={item.is_approved > 0 || buttonStatus === "loading" && true}
+                                            disabled={item.is_approved > 0 || buttonStatus === "loading" ? true : false}
                                             value={item !== null ? item.score_third : ""}
                                             onChange={(value) => saveScore(value, 'score_third', indexA, indexB)}
                                         />
@@ -625,7 +639,7 @@ function Score(props) {
                                             min={0}
                                             max={99} 
                                             placeholder="0"
-                                            disabled={item.is_approved > 0 || buttonStatus === "loading" && true}
+                                            disabled={item.is_approved > 0 || buttonStatus === "loading" ? true : false}
                                             value={item !== null ? item.score_fourth : ""}
                                             onChange={(value) => saveScore(value, 'score_fourth', indexA, indexB)}
                                         />
@@ -635,7 +649,7 @@ function Score(props) {
                                             min={0}
                                             max={99} 
                                             placeholder="0"
-                                            disabled={item.is_approved > 0 || buttonStatus === "loading" && true}
+                                            disabled={item.is_approved > 0 || buttonStatus === "loading" ? true : false}
                                             value={item !== null ? item.score_fifth : ""}
                                             onChange={(value) => saveScore(value, 'score_fifth', indexA, indexB)}
                                         />
@@ -683,9 +697,9 @@ function Score(props) {
                                 onClick={() => sendScoreDate(indexA)}
                                 disabled={buttonStatus === "loading" && true}
                             >
-                                {buttonStatus === "normal" ? 
-                                    <Icon type="save" theme="filled" /> :
-                                    <Icon type="loading" />
+                                {buttonStatus === "loading" ? 
+                                    <Icon type="loading" /> :
+                                    <Icon type="save" theme="filled" />
                                 } บันทีก
                             </Button>}
                         </div>
