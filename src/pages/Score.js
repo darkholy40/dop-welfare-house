@@ -533,7 +533,7 @@ function Score(props) {
                 >
                     <Icon type="caret-left" /> กลับ
                 </Button>
-                {Object.keys(dataToSend).map((groupKeyName, indexA) => {
+                {candidatesData.map((objGroup, indexA) => {
                     let checkApproved = 1
 
                     return (
@@ -550,11 +550,11 @@ function Score(props) {
                                     fontWeight: "bold"
                                 }}
                             >
-                                {dataToSend[groupKeyName][`person_0`].salary_group}
+                                {objGroup[0].salary_group}
                             </p>
                             <HorizontalLine />
-                            {Object.keys(dataToSend[groupKeyName]).map((personKeyName, indexB) => {
-                                const item = dataToSend[groupKeyName][personKeyName]
+                            {objGroup.map((objPerson, indexB) => {
+                                const item = dataToSend[`group_${indexA}`] !== undefined ? dataToSend[`group_${indexA}`][`person_${indexB}`] : objPerson
                                 if(item.is_approved === 0) {
                                     checkApproved = 0
                                 }
@@ -578,7 +578,6 @@ function Score(props) {
                                             max={99} 
                                             placeholder="0"
                                             disabled={item.is_approved > 0 && true}
-                                            // defaultValue={item.is_approved > 0 ? item.score_first : ""}
                                             value={item !== null ? item.score_first : ""}
                                             onChange={(value) => saveScore(value, 'score_first', indexA, indexB)}
                                         />
@@ -589,7 +588,6 @@ function Score(props) {
                                             max={99} 
                                             placeholder="0"
                                             disabled={item.is_approved > 0 && true}
-                                            // defaultValue={item.is_approved > 0 ? item.score_second : ""}
                                             value={item !== null ? item.score_second : ""}
                                             onChange={(value) => saveScore(value, 'score_second', indexA, indexB)}
                                         />
@@ -600,7 +598,6 @@ function Score(props) {
                                             max={99} 
                                             placeholder="0"
                                             disabled={item.is_approved > 0 && true}
-                                            // defaultValue={item.is_approved > 0 ? item.score_third : ""}
                                             value={item !== null ? item.score_third : ""}
                                             onChange={(value) => saveScore(value, 'score_third', indexA, indexB)}
                                         />
@@ -611,7 +608,6 @@ function Score(props) {
                                             max={99} 
                                             placeholder="0"
                                             disabled={item.is_approved > 0 && true}
-                                            // defaultValue={item.is_approved > 0 ? item.score_fourth : ""}
                                             value={item !== null ? item.score_fourth : ""}
                                             onChange={(value) => saveScore(value, 'score_fourth', indexA, indexB)}
                                         />
@@ -622,7 +618,6 @@ function Score(props) {
                                             max={99} 
                                             placeholder="0"
                                             disabled={item.is_approved > 0 && true}
-                                            // defaultValue={item.is_approved > 0 ? item.score_fifth : ""}
                                             value={item !== null ? item.score_fifth : ""}
                                             onChange={(value) => saveScore(value, 'score_fifth', indexA, indexB)}
                                         />
