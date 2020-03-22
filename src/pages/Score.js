@@ -4,7 +4,6 @@ import axios from 'axios'
 import styled from 'styled-components'
 import {
     InputNumber,
-    Select,
     Button,
     Icon,
     ConfigProvider,
@@ -19,7 +18,6 @@ import NotFound from '../components/functions/NotFound'
 import Loading from '../components/functions/Loading'
 import ConnectionFailed from '../components/functions/ConnectionFailed'
 import Empty from '../components/icons/Empty'
-import displayDateFotmat from '../functions/displayDateFotmat'
 
 const ThisContainer = styled(Container)`
     &.hidden {
@@ -92,16 +90,6 @@ const ErrorBlock = styled.div`
 
     @media (max-width: 360px) {
         max-width: 280px;
-    }
-`
-
-const LoadingBlock = styled.div`
-    display: flex;
-    flex-direction: column;
-    padding: 3rem;
-
-    span {
-        font-size: 1.25rem;
     }
 `
 
@@ -323,8 +311,7 @@ function Score(props) {
                     }
                 }
             })
-            .catch((err) => {
-                console.log(err)
+            .catch(() => {
                 setAfterGettingData(4)
             })
         }, timer || 0)
@@ -366,13 +353,11 @@ function Score(props) {
             .then(res => {
                 const response = res.data
     
-                console.log(response)
                 setCandidatesData(response.data)
                 formatDataToSend(response.data)
                 swalCustomize.close()
             })
-            .catch((err) => {
-                console.log(err)
+            .catch(() => {
                 swalCustomize.close()
                 notification['warning']({
                     message: 'แจ้งเตือน',
@@ -477,9 +462,7 @@ function Score(props) {
                     // console.log("ไม่มีข้อมูลที่ถูกบันทึก")
                 }
             })
-            .catch((err) => {
-                console.log(err)
-
+            .catch(() => {
                 notification['warning']({
                     message: 'แจ้งเตือน',
                     description: 'บันทึกข้อมูลไม่สำเร็จ กรุณาลองใหม่อีกครั้ง',
