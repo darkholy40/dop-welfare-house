@@ -254,14 +254,6 @@ function Score(props) {
         }
     }, [afterGettingdata])
 
-    useEffect(() => {
-        console.log(dataToSend)
-    }, [dataToSend])
-
-    useEffect(() => {
-        console.log(saveScoreButtons)
-    }, [saveScoreButtons])
-
     function setInitialState(stateName) {
         switch (stateName) {
             case 'getData':
@@ -440,7 +432,7 @@ function Score(props) {
 
     function markApprove(groupKeyName) {
         let newData = {}
-        console.log(dataToSend[groupKeyName])
+
         Object.keys(dataToSend[groupKeyName]).map((personKeyName) => {
             newData = {
                 ...newData,
@@ -463,7 +455,7 @@ function Score(props) {
     function sendScoreDate(groupIndex) {
         const selectedGroup = `group_${groupIndex}`
         const dataForSending = dataToSend[selectedGroup]
-        // console.log(dataForSending)
+
         setSaveScoreButtons({...saveScoreButtons, [`button_${groupIndex}`]: {
             status: "loading"
         }})
