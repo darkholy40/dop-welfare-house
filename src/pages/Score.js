@@ -158,6 +158,7 @@ function Score(props) {
     const [displayElements, setDisplayElements] = useState(setInitialState('displayElements'))
     const [candidatesData, setCandidatesData] = useState(setInitialState('candidatesData'))
     const [dataToSend, setDataToSend] = useState(setInitialState('dataToSend'))
+    const [saveScoreButtons, setSaveScoreButtons] = useState(setInitialState('saveScoreButtons'))
 
     const customizeRenderEmpty = () => (
         <div 
@@ -257,6 +258,10 @@ function Score(props) {
         console.log(dataToSend)
     }, [dataToSend])
 
+    useEffect(() => {
+        console.log(saveScoreButtons)
+    }, [saveScoreButtons])
+
     function setInitialState(stateName) {
         switch (stateName) {
             case 'getData':
@@ -272,6 +277,7 @@ function Score(props) {
                 return []
 
             case 'dataToSend':
+            case 'saveScoreButtons':
                 return {}
 
             default:
@@ -382,12 +388,20 @@ function Score(props) {
 
     function formatDataToSend(getArrObj) {
         const candidatesListData = getArrObj
-        let arrayResult = {}
+        let objDataForSending = {}
+        let objSaveScoreButton = {}
 
         for(let i=0; i<candidatesListData.length; i++) {
-            arrayResult[`group_${i}`] = {}
+            objDataForSending[`group_${i}`] = {}
+            objSaveScoreButton = {
+                ...objSaveScoreButton,
+                [`button_${i}`]: {
+                    status: 'normal'
+                }
+            }
+
             for(let j=0; j<candidatesListData[i].length; j++) {
-                arrayResult[`group_${i}`][`person_${j}`] = {
+                objDataForSending[`group_${i}`][`person_${j}`] = {
                     agent_id: props.userData.id,
                     candidate_id: candidatesListData[i][j].id,
                     score_first: candidatesListData[i][j].score_first,
@@ -404,8 +418,9 @@ function Score(props) {
             }
         }
 
-        console.log(arrayResult)
-        setDataToSend(arrayResult)
+        console.log(objSaveScoreButton)
+        setDataToSend(objDataForSending)
+        setSaveScoreButtons(objSaveScoreButton)
         return 0
     }
 
@@ -445,24 +460,30 @@ function Score(props) {
         })
     }
 
-    function sendScoreDate(selectedGroup) {
+    function sendScoreDate(groupIndex) {
+        const selectedGroup = `group_${groupIndex}`
         const dataForSending = dataToSend[selectedGroup]
-        console.log(dataForSending)
+        // console.log(dataForSending)
+        setSaveScoreButtons({...saveScoreButtons, [`button_${groupIndex}`]: {
+            status: "loading"
+        }})
 
-        axios.post(`${props.url}/candidates/score/save`, {
-            groupData: dataForSending,
-        })
-        .then(res => {
-            if(res.data.code === '00200') {
-                console.log("บันทึกข้อมูล เรียบร้อย")
-                markApprove(selectedGroup)
-            } else {
-                console.log("ไม่สามารถบันทึกข้อมูล")
-            }
-        })
-        .catch((err) => {
-            console.log(err)
-        })
+        setTimeout(() => {
+            axios.post(`${props.url}/candidates/score/save`, {
+                groupData: dataForSending,
+            })
+            .then(res => {
+                if(res.data.code === '00200') {
+                    console.log("บันทึกข้อมูล เรียบร้อย")
+                    markApprove(selectedGroup)
+                } else {
+                    console.log("ไม่สามารถบันทึกข้อมูล")
+                }
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+        }, 500)
     }
 
     function renderOptionList() {
@@ -529,12 +550,17 @@ function Score(props) {
                     style={{
                         marginBottom: 15
                     }}
-                    onClick={() => setCandidatesData(setInitialState('candidatesData'))}
+                    onClick={() => {
+                        setCandidatesData(setInitialState('candidatesData'))
+                        setDataToSend(setInitialState('dataToSend'))
+                        setSaveScoreButtons(setInitialState('saveScoreButtons'))
+                    }}
                 >
                     <Icon type="caret-left" /> กลับ
                 </Button>
                 {candidatesData.map((objGroup, indexA) => {
                     let checkApproved = 1
+                    let buttonStatus = saveScoreButtons[`button_${indexA}`] !== undefined ? saveScoreButtons[`button_${indexA}`].status : "normal"
 
                     return (
                         <div
@@ -577,7 +603,7 @@ function Score(props) {
                                             min={0}
                                             max={99} 
                                             placeholder="0"
-                                            disabled={item.is_approved > 0 && true}
+                                            disabled={item.is_approved > 0 || buttonStatus === "loading" && true}
                                             value={item !== null ? item.score_first : ""}
                                             onChange={(value) => saveScore(value, 'score_first', indexA, indexB)}
                                         />
@@ -587,7 +613,7 @@ function Score(props) {
                                             min={0}
                                             max={99} 
                                             placeholder="0"
-                                            disabled={item.is_approved > 0 && true}
+                                            disabled={item.is_approved > 0 || buttonStatus === "loading" && true}
                                             value={item !== null ? item.score_second : ""}
                                             onChange={(value) => saveScore(value, 'score_second', indexA, indexB)}
                                         />
@@ -597,7 +623,7 @@ function Score(props) {
                                             min={0}
                                             max={99} 
                                             placeholder="0"
-                                            disabled={item.is_approved > 0 && true}
+                                            disabled={item.is_approved > 0 || buttonStatus === "loading" && true}
                                             value={item !== null ? item.score_third : ""}
                                             onChange={(value) => saveScore(value, 'score_third', indexA, indexB)}
                                         />
@@ -607,7 +633,7 @@ function Score(props) {
                                             min={0}
                                             max={99} 
                                             placeholder="0"
-                                            disabled={item.is_approved > 0 && true}
+                                            disabled={item.is_approved > 0 || buttonStatus === "loading" && true}
                                             value={item !== null ? item.score_fourth : ""}
                                             onChange={(value) => saveScore(value, 'score_fourth', indexA, indexB)}
                                         />
@@ -617,7 +643,7 @@ function Score(props) {
                                             min={0}
                                             max={99} 
                                             placeholder="0"
-                                            disabled={item.is_approved > 0 && true}
+                                            disabled={item.is_approved > 0 || buttonStatus === "loading" && true}
                                             value={item !== null ? item.score_fifth : ""}
                                             onChange={(value) => saveScore(value, 'score_fifth', indexA, indexB)}
                                         />
@@ -631,6 +657,7 @@ function Score(props) {
                             })}
                             {checkApproved ?
                             <div
+                                className="animated fadeIn"
                                 style={{
                                     display: "inline-block",
                                     marginTop: 10,
@@ -661,80 +688,19 @@ function Score(props) {
                                     marginTop: 10
                                 }}
                                 type="primary"
-                                onClick={() => sendScoreDate(`group_${indexA}`)}
+                                onClick={() => sendScoreDate(indexA)}
+                                disabled={buttonStatus === "loading" && true}
                             >
-                                <Icon type="save" theme="filled" /> บันทีก
+                                {buttonStatus === "normal" ? 
+                                    <Icon type="save" theme="filled" /> :
+                                    <Icon type="loading" />
+                                } บันทีก
                             </Button>}
                         </div>
                     )
                 })}
             </div>
         )
-
-        // return (
-        //     <div
-        //         className="animated fadeIn"
-        //         style={{
-        //             textAlign: "left",
-        //             width: "100%"
-        //         }}
-        //     >
-        //         <Button
-        //             style={{
-        //                 marginBottom: 15
-        //             }}
-        //             onClick={() => setCandidatesData(setInitialState('candidatesData'))}
-        //         >
-        //             <Icon type="caret-left" /> กลับ
-        //         </Button>
-        //         <p style={{
-        //             marginBottom: 0
-        //         }}>น.4-5</p>
-        //         <HorizontalLine />
-        //         <div>
-        //             <p style={{
-        //                 marginBottom: 0
-        //             }}>
-        //                 พ.อ. พชรพล ปลื้มใจ
-        //             </p>
-        //             <StyledInputNumber
-        //                 type="number"
-        //                 size="small"
-        //                 min={0}
-        //                 max={100} 
-        //                 placeholder="0"
-        //             />
-        //             <StyledInputNumber
-        //                 type="number"
-        //                 size="small"
-        //                 min={0}
-        //                 max={100} 
-        //                 placeholder="0"
-        //             />
-        //             <StyledInputNumber
-        //                 type="number"
-        //                 size="small"
-        //                 min={0}
-        //                 max={100} 
-        //                 placeholder="0"
-        //             />
-        //             <StyledInputNumber
-        //                 type="number"
-        //                 size="small"
-        //                 min={0}
-        //                 max={100} 
-        //                 placeholder="0"
-        //             />
-        //             <StyledInputNumber
-        //                 type="number"
-        //                 size="small"
-        //                 min={0}
-        //                 max={100} 
-        //                 placeholder="0"
-        //             />
-        //         </div>
-        //     </div>
-        // )
     }
 
     function renderScoreContent() {
