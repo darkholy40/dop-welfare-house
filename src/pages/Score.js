@@ -490,7 +490,7 @@ function Score(props) {
         }, 1000)
     }
 
-    function getSuccessRibbon() {
+    function getSuccessRibbon(type) {
         axios.get(`${props.url}/verify/approvement`, {
             headers: {
                 'authorization': props.token,
@@ -500,9 +500,28 @@ function Score(props) {
         .then(res => {
             const response = res.data
             setSuccessRibbons(response.data)
+
+            if(type === 'again') {
+                notification['success']({
+                    message: 'แจ้งเตือน',
+                    description: 'เชื่อมต่อสำเร็จ',
+                    duration: 4,
+                })
+            }
         })
         .catch(() => {
-            
+            // การเชื่อมต่อไม่เสถียร
+            if(type !== 'again') {
+                notification['warning']({
+                    message: 'แจ้งเตือน',
+                    description: 'การเชื่อมต่อไม่เสถียร',
+                    duration: 4,
+                })
+            }
+
+            setTimeout(() => {
+                getSuccessRibbon("again")
+            }, 3000)
         })
     }
     function renderOptionList() {
