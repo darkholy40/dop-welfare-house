@@ -139,7 +139,12 @@ const StyledInputNumber = styled(InputNumber)`
 
 const TotalScoreEachPerson = styled.span`
     padding-left: 5px;
-    color: rgb(100, 200, 100);
+    color: ${props => props.totalscore < 40 ?
+            props.totalscore < 1 ? 
+                `rgb(200, 200, 200)` :
+                `rgb(100, 200, 100)` :
+        `rgb(100, 100, 200)`
+    };
 `
 
 function mapStateToProps(state) {
@@ -621,7 +626,9 @@ function Score(props) {
                                             value={item !== null ? item.score_fifth : ""}
                                             onChange={(value) => saveScore(value, 'score_fifth', indexA, indexB)}
                                         />
-                                        <TotalScoreEachPerson>
+                                        <TotalScoreEachPerson
+                                            totalscore={displayTotalScoreEachPerson(item.score_first, item.score_second, item.score_third, item.score_fourth, item.score_fifth)}
+                                        >
                                             {displayTotalScoreEachPerson(item.score_first, item.score_second, item.score_third, item.score_fourth, item.score_fifth)}
                                         </TotalScoreEachPerson>
                                     </div>
