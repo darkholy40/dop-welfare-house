@@ -325,14 +325,10 @@ function Home(props) {
         }
     }
 
-    if(props.token !== '') {
-        return <Redirect to={`/${props.username}`} />
-    }
-
     return (
-        isLoggedIn 
+        isLoggedIn || props.token !== ''
         ?
-        <Redirect to={`/${username}`} />
+        <Redirect to="score" />
         :
         <HomeContainer className={homeContainerClass}>
             <HomeRow>
