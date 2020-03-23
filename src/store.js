@@ -56,6 +56,7 @@ const persistConfig = {
     key: 'root',
     storage: storage,
     whitelist: [
+        'userData',
         'username',
         'token'
     ]
