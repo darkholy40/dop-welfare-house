@@ -10,11 +10,13 @@ import {
     message,
     notification
 } from 'antd'
+import logo from '../images/logo.png'
 
 const HeaderContainer = styled.div`
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-direction: row-reverse;
     padding: 0 2rem;
     background-color: rgba(255, 255, 255);
     border-bottom: 1px solid rgba(0,0,0,0.1);
@@ -37,6 +39,7 @@ const HeaderContainer = styled.div`
 const ProfileContent = styled.span`
     font-size: 1rem;
     padding: 0.75rem 0.5rem;
+    border-radius: 3px;
     cursor: pointer;
     transition: 0.1s;
 
@@ -50,21 +53,19 @@ const ProfileContent = styled.span`
     }
 `
 
-const SearchIcon = styled(Icon)`
-    display: none;
+const DopLogoBlock = styled.div`
+    max-width: 60px;
     cursor: pointer;
-    border-radius: 30px;
-    transition: 0.1s;
+    padding: 0.5rem;
+    border-radius: 100%;
 
     &:hover {
         background-color: #efefef;
     }
+`
 
-    @media (max-width: 991px) {
-        display: block;
-        font-size: 1.25rem;
-        padding: 0.5rem;
-    }
+const DopLogo = styled.img`
+    width: 100%;
 `
 
 function mapStateToProps(state) {
@@ -75,6 +76,7 @@ function Header(props) {
     const [headerContainerState, setHeaderContainerState] = useState('hidden')
     const [isLoggedOut, setLoggedOut] = useState(setInitialState('isLoggedOut'))
     const [isLoading, setIsLoading] = useState(setInitialState('isLoading'))
+    const [goHome, setGoHome] = useState(setInitialState('goHome'))
 
     const menu = (
         <Menu>
@@ -107,6 +109,9 @@ function Header(props) {
                 return false
 
             case 'isLoading':
+                return false
+
+            case 'goHome':
                 return false
         
             default:
@@ -152,7 +157,7 @@ function Header(props) {
     }
 
     return (
-        isLoggedOut
+        isLoggedOut || goHome
         ? <Redirect to="/" />
         : <HeaderContainer className={headerContainerState}>
             <Dropdown overlay={menu} trigger={['click']} placement="bottomLeft">
@@ -165,15 +170,9 @@ function Header(props) {
                     </span>
                 </ProfileContent>
             </Dropdown>
-            <SearchIcon
-                type="search"
-                onClick={() => {
-                    props.dispatch({
-                        type: 'TRIGGER_SEARCH_DRAWER',
-                        visibility: true
-                    })
-                }}
-            />
+            <DopLogoBlock onClick={() => setGoHome(true)}>
+                <DopLogo src={logo} />
+            </DopLogoBlock>
         </HeaderContainer>
     )
 }
