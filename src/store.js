@@ -7,13 +7,7 @@ const initState = {
     url: 'http://localhost:8080',
     userData: '',
     username: '',
-    token: '',
-    dopSearchDrawer: false,
-    setting: {
-        rank: [],
-        born: [],
-        groups: [],
-    }
+    token: ''
 }
 
 const reducer = (state = initState, action) => {
@@ -28,12 +22,6 @@ const reducer = (state = initState, action) => {
             return {
                 ...state,
                 userData: action.data
-            }
-
-        case 'GET_SETTING':
-            return {
-                ...state,
-                setting: action.data
             }
 
         case 'SET_TOKEN':
@@ -55,13 +43,6 @@ const reducer = (state = initState, action) => {
                 userData: '',
                 username: '',
                 token: ''
-            }
-
-        case 'TRIGGER_SEARCH_DRAWER':
-            const setVisibility = action.visibility
-            return {
-                ...state,
-                dopSearchDrawer: setVisibility
             }
 
         default:
