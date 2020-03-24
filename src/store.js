@@ -4,7 +4,7 @@ import storage from 'redux-persist/lib/storage'
 
 const initState = {
     appContainerClass: 'center',
-    url: 'http://localhost:8080',
+    url: 'http://164.115.43.132:8080',
     userData: '',
     username: '',
     token: ''
