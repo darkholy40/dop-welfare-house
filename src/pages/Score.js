@@ -219,6 +219,9 @@ function Score(props) {
                     type: 'SET_APP_CLASS',
                     data: 'notfound'
                 })
+                props.dispatch({
+                    type: 'TOKEN_EXPIRED'
+                })
                 return setDisplayElements(<NotFound type="wrong-url" />)
 
             case 4:
